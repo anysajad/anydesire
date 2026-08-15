@@ -3,11 +3,13 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  limit,
   orderBy,
   query,
   serverTimestamp,
   setDoc,
   updateDoc,
+  where,
 } from 'firebase/firestore'
 import { db } from './firebase.js'
 
@@ -48,4 +50,27 @@ export function updateProject(id, data) {
 
 export function deleteProject(id) {
   return deleteDoc(doc(db, PROJECTS_COLLECTION, id))
+}
+
+export async function listPublishedProjects() {
+  const q = query(
+    collection(db, PROJECTS_COLLECTION),
+    where('published', '==', true),
+    orderBy('order', 'asc'),
+  )
+  const snapshot = await getDocs(q)
+  return snapshot.docs.map((document) => ({ id: document.id, ...document.data() }))
+}
+
+export async function getPublishedProjectBySlug(slug) {
+  const q = query(
+    collection(db, PROJECTS_COLLECTION),
+    where('published', '==', true),
+    where('slug', '==', slug),
+    limit(1),
+  )
+  const snapshot = await getDocs(q)
+  if (snapshot.empty) return null
+  const doc = snapshot.docs[0]
+  return { id: doc.id, ...doc.data() }
 }
