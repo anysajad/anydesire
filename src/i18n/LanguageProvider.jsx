@@ -18,10 +18,6 @@ export function LanguageProvider({ children }) {
     const root = document.documentElement
     root.lang = language
     root.dir = language === 'ar' ? 'rtl' : 'ltr'
-    document.title = translations[language].meta.title
-    document
-      .querySelector('meta[name="description"]')
-      ?.setAttribute('content', translations[language].meta.description)
     try {
       localStorage.setItem(STORAGE_KEY, language)
     } catch {

@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 import { useLanguage } from '../i18n/useLanguage.js'
+import { usePageMeta } from '../i18n/usePageMeta.js'
 
 function NotFoundPage() {
   const { t } = useLanguage()
+  usePageMeta(`${t.notFound.title} — AnyDesire`, t.notFound.text)
 
   return (
     <>

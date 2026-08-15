@@ -54,7 +54,10 @@ export const translations = {
       rights: 'All rights reserved.',
     },
     project: {
-      back: 'Back to home',
+      back: 'Back to work',
+      error: 'Could not load this project.',
+      gallery: 'Gallery',
+      close: 'Close',
       notFoundTitle: 'Project not found',
       notFoundText: 'This project does not exist or is not published.',
       status: {
@@ -65,8 +68,19 @@ export const translations = {
         archived: 'Archived',
       },
       category: 'Category',
+      statusLabel: 'Status',
       technologies: 'Technologies',
-      links: { demo: 'Live demo', source: 'Source code' },
+      links: { demo: 'Live demo', github: 'Source code' },
+      cta: {
+        title: 'Have an idea of your own?',
+        text: "Let's see what we can build.",
+        action: 'Start a project',
+      },
+      nav: {
+        label: 'More projects',
+        previous: 'Previous project',
+        next: 'Next project',
+      },
     },
     notFound: {
       title: 'Page not found',
@@ -129,7 +143,10 @@ export const translations = {
       rights: 'جميع الحقوق محفوظة.',
     },
     project: {
-      back: 'العودة للرئيسية',
+      back: 'العودة إلى الأعمال',
+      error: 'تعذّر تحميل هذا المشروع.',
+      gallery: 'صور المشروع',
+      close: 'إغلاق',
       notFoundTitle: 'المشروع غير موجود',
       notFoundText: 'هذا المشروع غير موجود أو غير منشور.',
       status: {
@@ -140,8 +157,19 @@ export const translations = {
         archived: 'مؤرشف',
       },
       category: 'التصنيف',
+      statusLabel: 'الحالة',
       technologies: 'التقنيات',
-      links: { demo: 'عرض مباشر', source: 'الكود المصدري' },
+      links: { demo: 'عرض مباشر', github: 'الكود المصدري' },
+      cta: {
+        title: 'عندك فكرة خاصة بك؟',
+        text: 'لنرَ ماذا نستطيع أن نبني.',
+        action: 'ابدأ مشروعك',
+      },
+      nav: {
+        label: 'مشاريع أخرى',
+        previous: 'المشروع السابق',
+        next: 'المشروع التالي',
+      },
     },
     notFound: {
       title: 'الصفحة غير موجودة',

@@ -3,36 +3,85 @@ import { Link, useParams } from 'react-router-dom'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 import { useLanguage } from '../i18n/useLanguage.js'
-import { getPublishedProjectBySlug } from '../lib/projects.js'
+import { usePageMeta } from '../i18n/usePageMeta.js'
+import { getPublishedProjectBySlug, listPublishedProjects } from '../lib/projects.js'
 
 function ProjectPage() {
   const { slug } = useParams()
-  const { t } = useLanguage()
-  const [project, setProject] = useState(null)
+  const { t, language } = useLanguage()
   const [status, setStatus] = useState('loading')
+  const [project, setProject] = useState(null)
+  const [prevProject, setPrevProject] = useState(null)
+  const [nextProject, setNextProject] = useState(null)
+  const [lightbox, setLightbox] = useState(null)
 
   useEffect(() => {
     let cancelled = false
     setStatus('loading')
-    getPublishedProjectBySlug(slug)
-      .then((data) => {
+    Promise.all([getPublishedProjectBySlug(slug), listPublishedProjects()])
+      .then(([project, projects]) => {
         if (cancelled) return
-        setProject(data)
-        setStatus(data ? 'ready' : 'missing')
+        if (!project) {
+          setStatus('missing')
+          return
+        }
+        const index = projects.findIndex((item) => item.id === project.id)
+        setPrevProject(index > 0 ? projects[index - 1] : null)
+        setNextProject(index >= 0 && index < projects.length - 1 ? projects[index + 1] : null)
+        setProject(project)
+        setStatus('ready')
       })
       .catch(() => {
-        if (!cancelled) setStatus('missing')
+        if (!cancelled) setStatus('error')
       })
     return () => {
       cancelled = true
     }
   }, [slug])
 
+  useEffect(() => {
+    if (lightbox === null) return
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') setLightbox(null)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = ''
+    }
+  }, [lightbox])
+
+  const title = language === 'ar' ? project?.titleAr || project?.title : project?.title || project?.titleAr
+  const shortDescription =
+    language === 'ar'
+      ? project?.shortDescriptionAr || project?.shortDescription
+      : project?.shortDescription || project?.shortDescriptionAr
+  const description =
+    language === 'ar'
+      ? project?.descriptionAr || project?.description
+      : project?.description || project?.descriptionAr
+  const paragraphs = description
+    ? description.split(/\n+/).map((paragraph) => paragraph.trim()).filter(Boolean)
+    : []
+  const screenshots = project?.screenshots ?? []
+
+  usePageMeta(
+    project ? `${title} — AnyDesire` : t.meta.title,
+    project ? shortDescription : t.meta.description,
+    project?.coverImage || null,
+  )
+
   return (
     <>
       <Navbar />
       <main className="project-page container">
+        <Link to="/#work" className="project-back">
+          {t.project.back}
+        </Link>
+
         {status === 'loading' && <p className="muted">{t.work.loading}</p>}
+        {status === 'error' && <p className="muted">{t.project.error}</p>}
 
         {status === 'missing' && (
           <div className="notfound">
@@ -44,40 +93,27 @@ function ProjectPage() {
           </div>
         )}
 
-        {status === 'ready' && (
+        {status === 'ready' && project && (
           <article>
-            <Link to="/" className="project-back">
-              {t.project.back}
-            </Link>
-            <h1>{project.title}</h1>
-            <div className="project-page-meta">
-              {project.category && <span>{project.category}</span>}
-              {project.status && (
-                <span>{t.project.status[project.status] ?? project.status}</span>
-              )}
-            </div>
-            {project.coverImage && (
-              <img
-                className="project-page-cover"
-                src={project.coverImage}
-                alt={project.title}
-              />
-            )}
-            <div className="project-page-body">
-              {project.shortDescription && <p>{project.shortDescription}</p>}
-              {project.description && <p>{project.description}</p>}
+            <header className="project-header">
+              <div className="project-header-meta">
+                {project.featured && <span className="badge">{t.work.featured}</span>}
+                {project.category && <span className="muted">{project.category}</span>}
+                {project.status && (
+                  <span className="muted">{t.project.status[project.status] ?? project.status}</span>
+                )}
+              </div>
+              <h1>{title}</h1>
+              {shortDescription && <p className="project-lead">{shortDescription}</p>}
               {project.technologies?.length > 0 && (
-                <>
-                  <h2 className="section-heading">{t.project.technologies}</h2>
-                  <ul className="tags">
-                    {project.technologies.map((technology) => (
-                      <li key={technology}>{technology}</li>
-                    ))}
-                  </ul>
-                </>
+                <ul className="tags">
+                  {project.technologies.map((technology) => (
+                    <li key={technology}>{technology}</li>
+                  ))}
+                </ul>
               )}
               {(project.demoUrl || project.githubUrl) && (
-                <div className="hero-actions">
+                <div className="project-links">
                   {project.demoUrl && (
                     <a
                       className="btn btn-primary"
@@ -89,21 +125,138 @@ function ProjectPage() {
                     </a>
                   )}
                   {project.githubUrl && (
-                    <a
-                      className="btn"
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {t.project.links.source}
+                    <a className="btn" href={project.githubUrl} target="_blank" rel="noreferrer">
+                      {t.project.links.github}
                     </a>
                   )}
                 </div>
               )}
-            </div>
+            </header>
+
+            {project.coverImage && (
+              <img className="project-cover" src={project.coverImage} alt={title} loading="lazy" />
+            )}
+
+            {paragraphs.length > 0 && (
+              <section className="project-description">
+                {paragraphs.map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </section>
+            )}
+
+            {screenshots.length > 0 && (
+              <section className="project-gallery">
+                <h2 className="section-heading">{t.project.gallery}</h2>
+                <div className="gallery">
+                  {screenshots.map((src, index) => (
+                    <button
+                      type="button"
+                      className="gallery-item"
+                      key={index}
+                      onClick={() => setLightbox(index)}
+                      aria-label={`${title} ${index + 1}`}
+                    >
+                      <img src={src} alt={`${title} ${index + 1}`} loading="lazy" />
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <dl className="project-info">
+              {project.category && (
+                <div>
+                  <dt>{t.project.category}</dt>
+                  <dd>{project.category}</dd>
+                </div>
+              )}
+              {project.status && (
+                <div>
+                  <dt>{t.project.statusLabel}</dt>
+                  <dd>{t.project.status[project.status] ?? project.status}</dd>
+                </div>
+              )}
+              {project.technologies?.length > 0 && (
+                <div>
+                  <dt>{t.project.technologies}</dt>
+                  <dd>
+                    <ul className="tags">
+                      {project.technologies.map((technology) => (
+                        <li key={technology}>{technology}</li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+              )}
+            </dl>
+
+            {(prevProject || nextProject) && (
+              <nav className="project-nav" aria-label={t.project.nav.label}>
+                {prevProject ? (
+                  <Link to={`/projects/${prevProject.slug}`} className="project-nav-link">
+                    <span className="muted">{t.project.nav.previous}</span>
+                    <span>
+                      {language === 'ar'
+                        ? prevProject.titleAr || prevProject.title
+                        : prevProject.title || prevProject.titleAr}
+                    </span>
+                  </Link>
+                ) : (
+                  <span />
+                )}
+                {nextProject ? (
+                  <Link
+                    to={`/projects/${nextProject.slug}`}
+                    className="project-nav-link project-nav-next"
+                  >
+                    <span className="muted">{t.project.nav.next}</span>
+                    <span>
+                      {language === 'ar'
+                        ? nextProject.titleAr || nextProject.title
+                        : nextProject.title || nextProject.titleAr}
+                    </span>
+                  </Link>
+                ) : (
+                  <span />
+                )}
+              </nav>
+            )}
+
+            <section className="project-cta">
+              <h2>{t.project.cta.title}</h2>
+              <p>{t.project.cta.text}</p>
+              <Link to="/#contact" className="btn btn-primary">
+                {t.project.cta.action}
+              </Link>
+            </section>
           </article>
         )}
       </main>
+
+      {status === 'ready' && lightbox !== null && screenshots[lightbox] && (
+        <div
+          className="lightbox"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setLightbox(null)}
+        >
+          <img
+            src={screenshots[lightbox]}
+            alt={`${title} ${lightbox + 1}`}
+            onClick={(event) => event.stopPropagation()}
+          />
+          <button
+            type="button"
+            className="lightbox-close"
+            onClick={() => setLightbox(null)}
+            aria-label={t.project.close}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       <Footer />
     </>
   )

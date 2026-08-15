@@ -8,9 +8,13 @@ import About from '../components/home/About.jsx'
 import Philosophy from '../components/home/Philosophy.jsx'
 import WhatWeBuild from '../components/home/WhatWeBuild.jsx'
 import Contact from '../components/home/Contact.jsx'
+import { useLanguage } from '../i18n/useLanguage.js'
+import { usePageMeta } from '../i18n/usePageMeta.js'
 
 function HomePage() {
   const location = useLocation()
+  const { t } = useLanguage()
+  usePageMeta(t.meta.title, t.meta.description)
 
   useEffect(() => {
     if (location.hash) {
