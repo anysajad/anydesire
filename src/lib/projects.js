@@ -1,5 +1,4 @@
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -7,6 +6,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
 } from 'firebase/firestore'
 import { db } from './firebase.js'
@@ -27,8 +27,12 @@ export async function listProjects() {
   return snapshot.docs.map((document) => ({ id: document.id, ...document.data() }))
 }
 
-export function createProject(data) {
-  return addDoc(collection(db, PROJECTS_COLLECTION), {
+export function newProjectId() {
+  return doc(collection(db, PROJECTS_COLLECTION)).id
+}
+
+export function createProject(id, data) {
+  return setDoc(doc(db, PROJECTS_COLLECTION, id), {
     ...data,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),

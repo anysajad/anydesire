@@ -1,0 +1,27 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == 'TygX6igvhObTbQLSJpTAtmNXkBC3';
+    }
+
+    // request.resource is null on delete; on uploads it holds the new file metadata.
+    function isAllowedImageUpload() {
+      return request.resource != null
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    match /projects/{projectId}/cover/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && (request.resource == null || isAllowedImageUpload());
+    }
+
+    match /projects/{projectId}/screenshots/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && (request.resource == null || isAllowedImageUpload());
+    }
+  }
+}

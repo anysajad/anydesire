@@ -1,5 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { PROJECT_STATUSES } from '../lib/projects.js'
+import { uploadProjectCover, uploadProjectScreenshot } from '../lib/storage.js'
+
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024
 
 const defaults = {
   title: '',
@@ -13,8 +16,6 @@ const defaults = {
   category: '',
   technologies: '',
   features: '',
-  coverImage: '',
-  screenshots: '',
   githubUrl: '',
   demoUrl: '',
   featured: false,
@@ -32,10 +33,22 @@ const requiredFields = {
   category: 'Category',
 }
 
-const urlFields = ['coverImage', 'githubUrl', 'demoUrl']
+const urlFields = ['githubUrl', 'demoUrl']
 
 function toArray(value) {
   return value.split(',').map((item) => item.trim()).filter(Boolean)
+}
+
+function normalizeImage(value) {
+  if (!value) return null
+  if (typeof value === 'string') return { url: value, path: '' }
+  return value
+}
+
+function validateImageFile(file) {
+  if (!file.type.startsWith('image/')) return 'Only image files are allowed.'
+  if (file.size > MAX_IMAGE_SIZE) return 'Image must be 10 MB or smaller.'
+  return ''
 }
 
 function validate(data) {
@@ -70,19 +83,87 @@ function Field({ label, error, children }) {
   )
 }
 
-function ProjectForm({ initialData, onSubmit, onCancel }) {
+function ProjectForm({ projectId, initialData, onSubmit, onCancel }) {
   const [form, setForm] = useState(() => ({
     ...defaults,
     ...initialData,
     technologies: initialData?.technologies?.join(', ') ?? '',
     features: initialData?.features?.join(', ') ?? '',
-    screenshots: initialData?.screenshots?.join(', ') ?? '',
   }))
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
+  const [imageError, setImageError] = useState('')
+
+  const existingCover = normalizeImage(initialData?.coverImage)
+  const initialScreenshots = (initialData?.screenshots ?? []).map(normalizeImage)
+
+  const [coverFile, setCoverFile] = useState(null)
+  const [coverPreview, setCoverPreview] = useState('')
+  const [coverRemoved, setCoverRemoved] = useState(false)
+  const [newScreenshotFiles, setNewScreenshotFiles] = useState([])
+  const [removedScreenshotPaths, setRemovedScreenshotPaths] = useState([])
+
+  const previewsRef = useRef([])
+  const trackPreview = (url) => {
+    previewsRef.current.push(url)
+    return url
+  }
+  useEffect(() => {
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      previewsRef.current.forEach((url) => URL.revokeObjectURL(url))
+    }
+  }, [])
+
+  const keptScreenshots = initialScreenshots.filter(
+    (screenshot) => !removedScreenshotPaths.includes(screenshot.path),
+  )
 
   function setField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  function handleCoverFile(event) {
+    const file = event.target.files?.[0]
+    if (!file) return
+    const fileError = validateImageFile(file)
+    if (fileError) {
+      setImageError(fileError)
+      event.target.value = ''
+      return
+    }
+    setImageError('')
+    setCoverFile(file)
+    setCoverPreview(trackPreview(URL.createObjectURL(file)))
+    setCoverRemoved(false)
+  }
+
+  function handleScreenshots(event) {
+    const files = Array.from(event.target.files ?? [])
+    if (files.length === 0) return
+    const fileError = files.map(validateImageFile).find(Boolean)
+    if (fileError) {
+      setImageError(fileError)
+      event.target.value = ''
+      return
+    }
+    setImageError('')
+    setNewScreenshotFiles((prev) => [
+      ...prev,
+      ...files.map((file) => ({ file, previewUrl: trackPreview(URL.createObjectURL(file)) })),
+    ])
+    event.target.value = ''
+  }
+
+  function removeNewScreenshot(item) {
+    URL.revokeObjectURL(item.previewUrl)
+    setNewScreenshotFiles((prev) => prev.filter((screenshot) => screenshot !== item))
+  }
+
+  function cancelNewCover() {
+    URL.revokeObjectURL(coverPreview)
+    setCoverPreview('')
+    setCoverFile(null)
   }
 
   async function handleSubmit(event) {
@@ -99,8 +180,6 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
       category: form.category.trim(),
       technologies: toArray(form.technologies),
       features: toArray(form.features),
-      coverImage: form.coverImage.trim(),
-      screenshots: toArray(form.screenshots),
       githubUrl: form.githubUrl.trim(),
       demoUrl: form.demoUrl.trim(),
       featured: form.featured,
@@ -110,9 +189,26 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
     const nextErrors = validate(data)
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) return
+
     setSaving(true)
+    setImageError('')
     try {
-      await onSubmit(data)
+      let coverImage = null
+      if (coverRemoved) {
+        coverImage = null
+      } else if (coverFile) {
+        coverImage = await uploadProjectCover(projectId, coverFile)
+      } else {
+        coverImage = existingCover
+      }
+
+      const uploadedScreenshots = []
+      for (const item of newScreenshotFiles) {
+        uploadedScreenshots.push(await uploadProjectScreenshot(projectId, item.file))
+      }
+      const screenshots = [...keptScreenshots, ...uploadedScreenshots]
+
+      await onSubmit({ ...data, coverImage, screenshots })
     } finally {
       setSaving(false)
     }
@@ -182,20 +278,6 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
             onChange={(event) => setField('features', event.target.value)}
           />
         </Field>
-        <Field label="Cover image URL">
-          <input
-            type="text"
-            value={form.coverImage}
-            onChange={(event) => setField('coverImage', event.target.value)}
-          />
-        </Field>
-        <Field label="Screenshots (comma-separated URLs)">
-          <input
-            type="text"
-            value={form.screenshots}
-            onChange={(event) => setField('screenshots', event.target.value)}
-          />
-        </Field>
         <Field label="GitHub URL">
           <input
             type="text"
@@ -240,6 +322,64 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
           onChange={(event) => setField('descriptionAr', event.target.value)}
         />
       </Field>
+
+      <div className="image-upload">
+        <span className="image-label">Cover image</span>
+        {!coverRemoved && (coverPreview || existingCover) && (
+          <div className="image-preview">
+            <img src={coverPreview || existingCover.url} alt="Cover preview" />
+          </div>
+        )}
+        {coverRemoved && <p className="muted">Cover image will be removed.</p>}
+        <input type="file" accept="image/*" onChange={handleCoverFile} />
+        {coverFile && (
+          <button type="button" onClick={cancelNewCover} disabled={saving}>
+            Cancel new cover
+          </button>
+        )}
+        {!coverFile && existingCover && !coverRemoved && (
+          <button type="button" onClick={() => setCoverRemoved(true)} disabled={saving}>
+            Remove cover
+          </button>
+        )}
+      </div>
+
+      <div className="image-upload">
+        <span className="image-label">Screenshots</span>
+        {keptScreenshots.length > 0 && (
+          <div className="thumb-grid">
+            {keptScreenshots.map((screenshot) => (
+              <div key={screenshot.path} className="thumb">
+                <img src={screenshot.url} alt="Screenshot" />
+                <button
+                  type="button"
+                  onClick={() =>
+                    setRemovedScreenshotPaths((prev) => [...prev, screenshot.path])
+                  }
+                  disabled={saving}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        {newScreenshotFiles.length > 0 && (
+          <div className="thumb-grid">
+            {newScreenshotFiles.map((item) => (
+              <div key={item.file.name} className="thumb">
+                <img src={item.previewUrl} alt={item.file.name} />
+                <button type="button" onClick={() => removeNewScreenshot(item)} disabled={saving}>
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        <input type="file" accept="image/*" multiple onChange={handleScreenshots} />
+      </div>
+
+      {imageError && <p className="error">{imageError}</p>}
 
       <div className="form-checkboxes">
         <label className="checkbox-field">

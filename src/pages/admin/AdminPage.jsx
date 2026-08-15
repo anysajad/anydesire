@@ -5,8 +5,18 @@ import {
   createProject,
   deleteProject,
   listProjects,
+  newProjectId,
   updateProject,
 } from '../../lib/projects.js'
+import { deleteProjectImage } from '../../lib/storage.js'
+
+function collectImagePaths(data) {
+  const cover = data.coverImage?.path ? [data.coverImage.path] : []
+  const screenshots = (data.screenshots ?? [])
+    .map((screenshot) => screenshot?.path)
+    .filter(Boolean)
+  return [...cover, ...screenshots]
+}
 
 function AdminPage() {
   const user = getCurrentUser()
@@ -34,12 +44,17 @@ function AdminPage() {
 
   function showNotice(message) {
     setNotice(message)
-    setTimeout(() => setNotice(''), 3000)
+    setTimeout(() => setNotice(''), 4000)
   }
 
-  async function handleCreate(data) {
+  async function cleanupImages(paths) {
+    const results = await Promise.allSettled(paths.map((path) => deleteProjectImage(path)))
+    return paths.filter((_, index) => results[index].status === 'rejected')
+  }
+
+  async function handleCreate(projectId, data) {
     try {
-      await createProject(data)
+      await createProject(projectId, data)
       await loadProjects()
       setView('list')
       showNotice('Project created.')
@@ -53,7 +68,15 @@ function AdminPage() {
       await updateProject(project.id, data)
       await loadProjects()
       setView('list')
-      showNotice('Project updated.')
+      const oldPaths = collectImagePaths(project)
+      const newPaths = collectImagePaths(data)
+      const toDelete = oldPaths.filter((path) => !newPaths.includes(path))
+      const failed = await cleanupImages(toDelete)
+      showNotice(
+        failed.length > 0
+          ? 'Project updated, but some old images could not be deleted.'
+          : 'Project updated.',
+      )
     } catch {
       setError('Failed to update project.')
     }
@@ -62,29 +85,39 @@ function AdminPage() {
   async function handleDelete(project) {
     if (!window.confirm(`Delete "${project.title}"?`)) return
     try {
+      const failed = await cleanupImages(collectImagePaths(project))
       await deleteProject(project.id)
       await loadProjects()
-      showNotice('Project deleted.')
+      showNotice(
+        failed.length > 0
+          ? 'Project deleted, but some images could not be removed.'
+          : 'Project deleted.',
+      )
     } catch {
       setError('Failed to delete project.')
     }
   }
 
-  if (view === 'add') {
-    return (
-      <div className="admin-container">
-        <h1>New Project</h1>
-        <ProjectForm onCancel={() => setView('list')} onSubmit={handleCreate} />
-      </div>
-    )
-  }
-
   if (view !== 'list') {
+    if (view.mode === 'add') {
+      return (
+        <div className="admin-container">
+          <h1>New Project</h1>
+          <ProjectForm
+            projectId={view.projectId}
+            onCancel={() => setView('list')}
+            onSubmit={(data) => handleCreate(view.projectId, data)}
+          />
+        </div>
+      )
+    }
+
     const project = view.project
     return (
       <div className="admin-container">
         <h1>Edit Project</h1>
         <ProjectForm
+          projectId={project.id}
           initialData={project}
           onCancel={() => setView('list')}
           onSubmit={(data) => handleUpdate(project, data)}
@@ -106,7 +139,7 @@ function AdminPage() {
       </header>
 
       <div className="admin-toolbar">
-        <button type="button" onClick={() => setView('add')}>
+        <button type="button" onClick={() => setView({ mode: 'add', projectId: newProjectId() })}>
           + Add Project
         </button>
         {notice && <span className="notice">{notice}</span>}

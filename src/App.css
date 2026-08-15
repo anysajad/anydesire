@@ -161,3 +161,47 @@ button:disabled {
   display: flex;
   gap: 0.5rem;
 }
+
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.image-label {
+  font-weight: 600;
+}
+
+.image-upload input[type='file'] {
+  max-width: 100%;
+}
+
+.image-preview img {
+  max-width: 320px;
+  max-height: 200px;
+  object-fit: contain;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.thumb-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.thumb {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.thumb img {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
