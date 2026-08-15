@@ -173,32 +173,17 @@ button:disabled {
   font-weight: 600;
 }
 
-.image-upload input[type='file'] {
-  max-width: 100%;
-}
-
-.image-preview img {
-  max-width: 320px;
-  max-height: 200px;
-  object-fit: contain;
-  border: 1px solid #eee;
-  border-radius: 4px;
-}
-
-.thumb-grid {
+.screenshot-row {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 0.5rem;
 }
 
-.thumb {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  align-items: center;
+.screenshot-row input {
+  flex: 1;
 }
 
-.thumb img {
+.thumb {
   width: 120px;
   height: 80px;
   object-fit: cover;

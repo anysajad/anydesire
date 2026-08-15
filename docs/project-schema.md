@@ -20,8 +20,8 @@ No documents exist yet — this defines the intended structure only.
 | `category`          | string    | Simple project category                                    |
 | `technologies`      | array     | Technology names                                           |
 | `features`          | array     | Feature strings                                            |
-| `coverImage`        | object    | `{ url, path }` or `null`. Storage path allows cleanup on replace/remove |
-| `screenshots`       | array     | Array of `{ url, path }` objects; empty when none |
+| `coverImage`        | string    | Image URL; nullable                                           |
+| `screenshots`       | array     | Array of image URL strings; empty when none                   |
 | `githubUrl`         | string    | Nullable                                                   |
 | `demoUrl`           | string    | Nullable                                                   |
 | `featured`          | boolean   | Shown in featured section                                  |
@@ -32,13 +32,6 @@ No documents exist yet — this defines the intended structure only.
 
 ## Images
 
-`coverImage` and `screenshots` store uploaded image references as `{ url, path }`
-objects where `url` is the Firebase Storage download URL and `path` is the
-Storage object path (`projects/{projectId}/cover/...` or
-`projects/{projectId}/screenshots/...`). The `path` lets the admin panel delete
-the Storage file when an image is replaced or removed, or when the project is
-deleted. Firestore never stores image binary data.
-
-Older/legacy documents may still contain a plain URL string (or an array of URL
-strings); the admin form normalizes these for display and treats them as
-non-deletable (no known path).
+`coverImage` is a nullable image URL string and `screenshots` is an array of
+image URL strings. Images are hosted and referenced by URL only; Firestore never
+stores image binary data.
