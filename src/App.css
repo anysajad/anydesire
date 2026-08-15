@@ -51,3 +51,113 @@ button:disabled {
 .error {
   color: #c0392b;
 }
+
+.admin-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.admin-header h1 {
+  margin: 0;
+}
+
+.admin-subtitle {
+  margin: 0.25rem 0 0;
+  color: #666;
+}
+
+.admin-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.notice {
+  color: #27ae60;
+}
+
+.muted {
+  color: #888;
+}
+
+.projects-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.projects-table th,
+.projects-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.projects-table .actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.project-form {
+  max-width: 720px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.field input,
+.field textarea,
+.field select {
+  font-weight: 400;
+  font: inherit;
+}
+
+.field textarea,
+.field select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.field-error {
+  color: #c0392b;
+  font-weight: 400;
+}
+
+.form-checkboxes {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.checkbox-field {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 400;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
