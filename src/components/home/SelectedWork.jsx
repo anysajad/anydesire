@@ -4,7 +4,7 @@ import { useLanguage } from '../../i18n/useLanguage.js'
 import { listPublishedProjects } from '../../lib/projects.js'
 
 function SelectedWork() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -31,6 +31,13 @@ function SelectedWork() {
     ...projects.filter((project) => !project.featured),
   ]
 
+  const titleFor = (project) =>
+    language === 'ar' ? project.titleAr || project.title : project.title || project.titleAr
+  const shortDescriptionFor = (project) =>
+    language === 'ar'
+      ? project.shortDescriptionAr || project.shortDescription
+      : project.shortDescription || project.shortDescriptionAr
+
   return (
     <section id="work" className="section">
       <div className="container">
@@ -54,7 +61,7 @@ function SelectedWork() {
                   <img
                     className="project-card-cover"
                     src={project.coverImage}
-                    alt={project.title}
+                    alt={titleFor(project)}
                     loading="lazy"
                   />
                 )}
@@ -68,9 +75,9 @@ function SelectedWork() {
                       </span>
                     )}
                   </div>
-                  <h3 className="project-card-title">{project.title}</h3>
-                  {project.shortDescription && (
-                    <p className="muted">{project.shortDescription}</p>
+                  <h3 className="project-card-title">{titleFor(project)}</h3>
+                  {shortDescriptionFor(project) && (
+                    <p className="muted">{shortDescriptionFor(project)}</p>
                   )}
                   {project.technologies?.length > 0 && (
                     <ul className="tags">

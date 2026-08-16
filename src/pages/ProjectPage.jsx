@@ -41,8 +41,13 @@ function ProjectPage() {
 
   useEffect(() => {
     if (lightbox === null) return
+    const screens = project?.screenshots ?? []
+    const move = (delta) =>
+      setLightbox((current) => (current + delta + screens.length) % screens.length)
     const onKeyDown = (event) => {
       if (event.key === 'Escape') setLightbox(null)
+      if (event.key === 'ArrowLeft') move(-1)
+      if (event.key === 'ArrowRight') move(1)
     }
     window.addEventListener('keydown', onKeyDown)
     document.body.style.overflow = 'hidden'
@@ -50,7 +55,7 @@ function ProjectPage() {
       window.removeEventListener('keydown', onKeyDown)
       document.body.style.overflow = ''
     }
-  }, [lightbox])
+  }, [lightbox, project])
 
   const title = language === 'ar' ? project?.titleAr || project?.title : project?.title || project?.titleAr
   const shortDescription =
@@ -65,12 +70,15 @@ function ProjectPage() {
     ? description.split(/\n+/).map((paragraph) => paragraph.trim()).filter(Boolean)
     : []
   const screenshots = project?.screenshots ?? []
+  const features = project?.features ?? []
 
   usePageMeta(
     project ? `${title} — AnyDesire` : t.meta.title,
     project ? shortDescription : t.meta.description,
     project?.coverImage || null,
   )
+
+  const currentScreenshot = lightbox !== null ? screenshots[lightbox] : null
 
   return (
     <>
@@ -145,22 +153,48 @@ function ProjectPage() {
               </section>
             )}
 
+            {features.length > 0 && (
+              <section className="project-features">
+                <h2 className="section-heading">{t.project.features}</h2>
+                <ol className="features">
+                  {features.map((feature, index) => (
+                    <li key={index}>
+                      <span className="features-num">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
+
             {screenshots.length > 0 && (
               <section className="project-gallery">
                 <h2 className="section-heading">{t.project.gallery}</h2>
-                <div className="gallery">
-                  {screenshots.map((src, index) => (
-                    <button
-                      type="button"
-                      className="gallery-item"
-                      key={index}
-                      onClick={() => setLightbox(index)}
-                      aria-label={`${title} ${index + 1}`}
-                    >
-                      <img src={src} alt={`${title} ${index + 1}`} loading="lazy" />
-                    </button>
-                  ))}
-                </div>
+                <button
+                  type="button"
+                  className="gallery-featured"
+                  onClick={() => setLightbox(0)}
+                  aria-label={`${title} 1`}
+                >
+                  <img src={screenshots[0]} alt={`${title} 1`} loading="lazy" />
+                </button>
+                {screenshots.length > 1 && (
+                  <div className="gallery-grid">
+                    {screenshots.slice(1).map((src, index) => (
+                      <button
+                        type="button"
+                        className="gallery-item"
+                        key={index}
+                        onClick={() => setLightbox(index + 1)}
+                        aria-label={`${title} ${index + 2}`}
+                      >
+                        <img src={src} alt={`${title} ${index + 2}`} loading="lazy" />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </section>
             )}
 
@@ -234,7 +268,7 @@ function ProjectPage() {
         )}
       </main>
 
-      {status === 'ready' && lightbox !== null && screenshots[lightbox] && (
+      {status === 'ready' && currentScreenshot && (
         <div
           className="lightbox"
           role="dialog"
@@ -242,7 +276,7 @@ function ProjectPage() {
           onClick={() => setLightbox(null)}
         >
           <img
-            src={screenshots[lightbox]}
+            src={currentScreenshot}
             alt={`${title} ${lightbox + 1}`}
             onClick={(event) => event.stopPropagation()}
           />
@@ -254,6 +288,28 @@ function ProjectPage() {
           >
             ×
           </button>
+          {screenshots.length > 1 && (
+            <>
+              <button
+                type="button"
+                className="lightbox-prev"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  setLightbox((lightbox + screenshots.length - 1) % screenshots.length)
+                }}
+                aria-label={t.project.nav.previous}
+              />
+              <button
+                type="button"
+                className="lightbox-next"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  setLightbox((lightbox + 1) % screenshots.length)
+                }}
+                aria-label={t.project.nav.next}
+              />
+            </>
+          )}
         </div>
       )}
 

@@ -1,8 +1,11 @@
 import { useLanguage } from '../i18n/useLanguage.js'
-import { socials } from '../lib/socials.js'
+import { useContactSettings } from '../lib/settings.js'
+
+const footerItems = ['github', 'instagram', 'telegram', 'whatsapp']
 
 function Footer() {
   const { t, language, setLanguage } = useLanguage()
+  const settings = useContactSettings()
   const year = new Date().getFullYear()
 
   return (
@@ -13,14 +16,14 @@ function Footer() {
           <p className="muted">{t.footer.tagline}</p>
         </div>
         <div className="footer-links">
-          <a href={socials.github} target="_blank" rel="noreferrer">
-            GitHub
-          </a>
-          {socials.instagram && (
-            <a href={socials.instagram} target="_blank" rel="noreferrer">
-              Instagram
-            </a>
-          )}
+          {settings &&
+            footerItems.map((item) =>
+              settings[item] ? (
+                <a key={item} href={settings[item]} target="_blank" rel="noreferrer">
+                  {t.contact[item]}
+                </a>
+              ) : null,
+            )}
           <button
             type="button"
             className="lang-toggle"

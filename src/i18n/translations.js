@@ -47,6 +47,8 @@ export const translations = {
       text: "Tell us what you're thinking. Let's see what we can build.",
       github: 'GitHub',
       instagram: 'Instagram',
+      telegram: 'Telegram',
+      whatsapp: 'WhatsApp',
       action: 'Start a project',
     },
     footer: {
@@ -70,6 +72,7 @@ export const translations = {
       category: 'Category',
       statusLabel: 'Status',
       technologies: 'Technologies',
+      features: 'Features',
       links: { demo: 'Live demo', github: 'Source code' },
       cta: {
         title: 'Have an idea of your own?',
@@ -136,6 +139,8 @@ export const translations = {
       text: 'أخبرنا بما تفكر به. لنرَ ماذا نستطيع أن نبني.',
       github: 'غيت هاب',
       instagram: 'إنستغرام',
+      telegram: 'تيليغرام',
+      whatsapp: 'واتساب',
       action: 'ابدأ مشروعك',
     },
     footer: {
@@ -159,6 +164,7 @@ export const translations = {
       category: 'التصنيف',
       statusLabel: 'الحالة',
       technologies: 'التقنيات',
+      features: 'المزايا',
       links: { demo: 'عرض مباشر', github: 'الكود المصدري' },
       cta: {
         title: 'عندك فكرة خاصة بك؟',

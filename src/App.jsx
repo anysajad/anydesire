@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import RequireAdmin from './components/RequireAdmin.jsx'
 import AdminPage from './pages/admin/AdminPage.jsx'
+import ContactSettingsPage from './pages/admin/ContactSettingsPage.jsx'
 import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
@@ -17,6 +18,7 @@ function App() {
         <Route path="/admin/login" element={<LoginPage />} />
         <Route element={<RequireAdmin />}>
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/settings" element={<ContactSettingsPage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

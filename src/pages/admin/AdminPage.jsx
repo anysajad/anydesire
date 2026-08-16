@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import ProjectForm from '../../components/ProjectForm.jsx'
 import { getCurrentUser, signOutUser } from '../../lib/auth.js'
 import {
@@ -113,6 +114,9 @@ function AdminPage() {
         <button type="button" onClick={() => setView({ mode: 'add', projectId: newProjectId() })}>
           + Add Project
         </button>
+        <Link to="/admin/settings" className="admin-link">
+          Contact Information
+        </Link>
         {notice && <span className="notice">{notice}</span>}
       </div>
 
@@ -120,7 +124,8 @@ function AdminPage() {
       {!loading && error && <p className="error">{error}</p>}
 
       {!loading && !error && (
-        <table className="projects-table">
+        <div className="table-scroll">
+          <table className="projects-table">
           <thead>
             <tr>
               <th>Title</th>
@@ -163,7 +168,8 @@ function AdminPage() {
               </tr>
             )}
           </tbody>
-        </table>
+          </table>
+        </div>
       )}
     </div>
   )

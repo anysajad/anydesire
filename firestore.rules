@@ -13,5 +13,10 @@ service cloud.firestore {
       allow read: if isPublished() || isAdmin();
       allow write: if isAdmin();
     }
+
+    match /settings/contact {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
   }
 }

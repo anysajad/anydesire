@@ -5,6 +5,10 @@
   --muted: #9c9ca3;
   --border: #232327;
   --border-strong: #3a3a41;
+  --accent: #6fbf93;
+  --accent-strong: #8fd6b0;
+  --accent-dim: rgba(111, 191, 147, 0.12);
+  --accent-border: rgba(111, 191, 147, 0.35);
   font-family:
     'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Roboto,
     'Noto Sans Arabic', sans-serif;
@@ -64,8 +68,13 @@ p {
 }
 
 :focus-visible {
-  outline: 2px solid var(--text);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
 }
 
 .container {

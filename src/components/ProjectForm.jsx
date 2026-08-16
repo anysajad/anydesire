@@ -78,6 +78,15 @@ function Field({ label, error, children }) {
   )
 }
 
+function FormGroup({ legend, children }) {
+  return (
+    <fieldset className="form-group">
+      <legend>{legend}</legend>
+      {children}
+    </fieldset>
+  )
+}
+
 function ImagePreview({ url }) {
   const [visible, setVisible] = useState(true)
   if (!url) return null
@@ -161,165 +170,206 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
 
   return (
     <form className="project-form" onSubmit={handleSubmit}>
-      <div className="form-grid">
-        <Field label="Title" error={errors.title}>
-          <input
-            type="text"
-            value={form.title}
-            onChange={(event) => setField('title', event.target.value)}
-          />
-        </Field>
+      <FormGroup legend="Basic information">
+        <div className="form-grid">
+          <Field label="Title" error={errors.title}>
+            <input
+              type="text"
+              value={form.title}
+              onChange={(event) => setField('title', event.target.value)}
+              placeholder="Debt Ledger"
+            />
+          </Field>
+          <Field label="Slug" error={errors.slug}>
+            <input
+              type="text"
+              value={form.slug}
+              onChange={(event) => setField('slug', event.target.value)}
+              placeholder="debt-ledger"
+            />
+          </Field>
+        </div>
+      </FormGroup>
+
+      <FormGroup legend="Arabic information">
         <Field label="Arabic title" error={errors.titleAr}>
           <input
             type="text"
             value={form.titleAr}
             onChange={(event) => setField('titleAr', event.target.value)}
+            placeholder="دفتر الديون"
           />
         </Field>
-        <Field label="Slug" error={errors.slug}>
-          <input
-            type="text"
-            value={form.slug}
-            onChange={(event) => setField('slug', event.target.value)}
+        <Field label="Arabic short description" error={errors.shortDescriptionAr}>
+          <textarea
+            rows="2"
+            value={form.shortDescriptionAr}
+            onChange={(event) => setField('shortDescriptionAr', event.target.value)}
+            placeholder="برنامج بسيط لإدارة ديون الزبائن لأصحاب المحلات."
           />
         </Field>
-        <Field label="Status" error={errors.status}>
-          <select
-            value={form.status}
-            onChange={(event) => setField('status', event.target.value)}
-          >
-            {PROJECT_STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Category" error={errors.category}>
-          <input
-            type="text"
-            value={form.category}
-            onChange={(event) => setField('category', event.target.value)}
+        <Field label="Arabic full description">
+          <textarea
+            rows="4"
+            value={form.descriptionAr}
+            onChange={(event) => setField('descriptionAr', event.target.value)}
+            placeholder="اكتب وصفاً للمشروع وما المشكلة التي يحلها..."
           />
         </Field>
-        <Field label="Order" error={errors.order}>
-          <input
-            type="number"
-            value={form.order}
-            onChange={(event) => setField('order', event.target.value)}
+      </FormGroup>
+
+      <FormGroup legend="Description">
+        <Field label="Short description" error={errors.shortDescription}>
+          <textarea
+            rows="2"
+            value={form.shortDescription}
+            onChange={(event) => setField('shortDescription', event.target.value)}
+            placeholder="Simple debt management for small businesses."
           />
         </Field>
+        <Field label="Full description">
+          <textarea
+            rows="4"
+            value={form.description}
+            onChange={(event) => setField('description', event.target.value)}
+            placeholder="Describe what the project does, why it was built, and what problem it solves..."
+          />
+        </Field>
+      </FormGroup>
+
+      <FormGroup legend="Classification / status">
+        <div className="form-grid">
+          <Field label="Category" error={errors.category}>
+            <input
+              type="text"
+              value={form.category}
+              onChange={(event) => setField('category', event.target.value)}
+              placeholder="Web Application"
+            />
+          </Field>
+          <Field label="Status" error={errors.status}>
+            <select
+              value={form.status}
+              onChange={(event) => setField('status', event.target.value)}
+            >
+              {PROJECT_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+          </Field>
+        </div>
+      </FormGroup>
+
+      <FormGroup legend="Technologies">
         <Field label="Technologies (comma-separated)">
           <input
             type="text"
             value={form.technologies}
             onChange={(event) => setField('technologies', event.target.value)}
+            placeholder="React, Vite, Firebase"
           />
         </Field>
+      </FormGroup>
+
+      <FormGroup legend="Features">
         <Field label="Features (comma-separated)">
           <input
             type="text"
             value={form.features}
             onChange={(event) => setField('features', event.target.value)}
+            placeholder="Customer management, Debt tracking, Payment history"
           />
         </Field>
-        <Field label="GitHub URL" error={errors.githubUrl}>
+      </FormGroup>
+
+      <FormGroup legend="Images">
+        <div className="image-upload">
+          <span className="image-label">Cover image</span>
+          {errors.coverImage && <span className="field-error">{errors.coverImage}</span>}
+          <ImagePreview url={form.coverImage.trim()} />
           <input
             type="text"
-            value={form.githubUrl}
-            onChange={(event) => setField('githubUrl', event.target.value)}
+            value={form.coverImage}
+            onChange={(event) => setField('coverImage', event.target.value)}
+            placeholder="https://example.com/project-cover.jpg"
           />
-        </Field>
-        <Field label="Demo URL" error={errors.demoUrl}>
-          <input
-            type="text"
-            value={form.demoUrl}
-            onChange={(event) => setField('demoUrl', event.target.value)}
-          />
-        </Field>
-      </div>
+        </div>
+        <div className="image-upload">
+          <span className="image-label">Screenshots</span>
+          {errors.screenshots && <span className="field-error">{errors.screenshots}</span>}
+          {form.screenshots.map((url, index) => (
+            <div key={index} className="screenshot-row">
+              <ImagePreview url={url.trim()} />
+              <input
+                type="text"
+                value={url}
+                onChange={(event) => setScreenshot(index, event.target.value)}
+                placeholder="https://example.com/screenshot-1.jpg"
+              />
+              <button type="button" onClick={() => removeScreenshot(index)} disabled={saving}>
+                Remove
+              </button>
+            </div>
+          ))}
+          <button type="button" onClick={addScreenshot} disabled={saving}>
+            Add screenshot URL
+          </button>
+        </div>
+      </FormGroup>
 
-      <Field label="Short description (EN)" error={errors.shortDescription}>
-        <textarea
-          rows="2"
-          value={form.shortDescription}
-          onChange={(event) => setField('shortDescription', event.target.value)}
-        />
-      </Field>
-      <Field label="Short description (AR)" error={errors.shortDescriptionAr}>
-        <textarea
-          rows="2"
-          value={form.shortDescriptionAr}
-          onChange={(event) => setField('shortDescriptionAr', event.target.value)}
-        />
-      </Field>
-      <Field label="Description (EN)">
-        <textarea
-          rows="4"
-          value={form.description}
-          onChange={(event) => setField('description', event.target.value)}
-        />
-      </Field>
-      <Field label="Description (AR)">
-        <textarea
-          rows="4"
-          value={form.descriptionAr}
-          onChange={(event) => setField('descriptionAr', event.target.value)}
-        />
-      </Field>
-
-      <div className="image-upload">
-        <span className="image-label">Cover image</span>
-        {errors.coverImage && <span className="field-error">{errors.coverImage}</span>}
-        <ImagePreview url={form.coverImage.trim()} />
-        <input
-          type="text"
-          value={form.coverImage}
-          onChange={(event) => setField('coverImage', event.target.value)}
-          placeholder="https://example.com/cover.png"
-        />
-      </div>
-
-      <div className="image-upload">
-        <span className="image-label">Screenshots</span>
-        {errors.screenshots && <span className="field-error">{errors.screenshots}</span>}
-        {form.screenshots.map((url, index) => (
-          <div key={index} className="screenshot-row">
-            <ImagePreview url={url.trim()} />
+      <FormGroup legend="Links">
+        <div className="form-grid">
+          <Field label="GitHub URL" error={errors.githubUrl}>
             <input
               type="text"
-              value={url}
-              onChange={(event) => setScreenshot(index, event.target.value)}
-              placeholder="https://example.com/screenshot.png"
+              value={form.githubUrl}
+              onChange={(event) => setField('githubUrl', event.target.value)}
+              placeholder="https://github.com/anydesire/..."
             />
-            <button type="button" onClick={() => removeScreenshot(index)} disabled={saving}>
-              Remove
-            </button>
-          </div>
-        ))}
-        <button type="button" onClick={addScreenshot} disabled={saving}>
-          Add screenshot URL
-        </button>
-      </div>
+          </Field>
+          <Field label="Demo URL" error={errors.demoUrl}>
+            <input
+              type="text"
+              value={form.demoUrl}
+              onChange={(event) => setField('demoUrl', event.target.value)}
+              placeholder="https://example.com/..."
+            />
+          </Field>
+        </div>
+      </FormGroup>
 
-      <div className="form-checkboxes">
-        <label className="checkbox-field">
-          <input
-            type="checkbox"
-            checked={form.featured}
-            onChange={(event) => setField('featured', event.target.checked)}
-          />
-          Featured
-        </label>
-        <label className="checkbox-field">
-          <input
-            type="checkbox"
-            checked={form.published}
-            onChange={(event) => setField('published', event.target.checked)}
-          />
-          Published
-        </label>
-      </div>
+      <FormGroup legend="Display settings">
+        <div className="form-grid">
+          <Field label="Order" error={errors.order}>
+            <input
+              type="number"
+              value={form.order}
+              onChange={(event) => setField('order', event.target.value)}
+              placeholder="1"
+            />
+          </Field>
+        </div>
+        <div className="form-checkboxes">
+          <label className="checkbox-field">
+            <input
+              type="checkbox"
+              checked={form.featured}
+              onChange={(event) => setField('featured', event.target.checked)}
+            />
+            Featured
+          </label>
+          <label className="checkbox-field">
+            <input
+              type="checkbox"
+              checked={form.published}
+              onChange={(event) => setField('published', event.target.checked)}
+            />
+            Published
+          </label>
+        </div>
+      </FormGroup>
 
       <div className="form-actions">
         <button type="submit" disabled={saving}>

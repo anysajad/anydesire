@@ -1,8 +1,11 @@
 import { useLanguage } from '../../i18n/useLanguage.js'
-import { socials } from '../../lib/socials.js'
+import { useContactSettings } from '../../lib/settings.js'
+
+const contactItems = ['github', 'instagram', 'telegram', 'whatsapp']
 
 function Contact() {
   const { t } = useLanguage()
+  const settings = useContactSettings()
 
   return (
     <section id="contact" className="contact">
@@ -10,14 +13,20 @@ function Contact() {
         <h2>{t.contact.heading}</h2>
         <p className="contact-text">{t.contact.text}</p>
         <div className="contact-links">
-          <a href={socials.github} className="btn" target="_blank" rel="noreferrer">
-            {t.contact.github}
-          </a>
-          {socials.instagram && (
-            <a href={socials.instagram} className="btn" target="_blank" rel="noreferrer">
-              {t.contact.instagram}
-            </a>
-          )}
+          {settings &&
+            contactItems.map((item) =>
+              settings[item] ? (
+                <a
+                  key={item}
+                  href={settings[item]}
+                  className="btn"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {t.contact[item]}
+                </a>
+              ) : null,
+            )}
           <a href="/#work" className="btn btn-primary">
             {t.contact.action}
           </a>
