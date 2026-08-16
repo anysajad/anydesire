@@ -3,9 +3,10 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from 'firebase/auth'
-import { auth } from './firebase.js'
+import { doc, getDoc } from 'firebase/firestore'
+import { auth, db } from './firebase.js'
 
-const ADMIN_UID = import.meta.env.VITE_ADMIN_UID
+export const OWNER_UID = import.meta.env.VITE_ADMIN_UID
 
 export function signInWithEmail(email, password) {
   return signInWithEmailAndPassword(auth, email, password)
@@ -23,6 +24,20 @@ export function onAuthStateChange(callback) {
   return onAuthStateChanged(auth, callback)
 }
 
-export function isAdmin(user) {
-  return Boolean(user && user.uid === ADMIN_UID)
+export function isOwner(user) {
+  return Boolean(user && user.uid === OWNER_UID)
+}
+
+// Returns 'owner', 'developer', or null. A user is a developer when their UID
+// has a document in the `admins` allow-list collection. The owner is always
+// allowed regardless of the allow-list.
+export async function getUserRole(user) {
+  if (!user) return null
+  if (isOwner(user)) return 'owner'
+  try {
+    const snapshot = await getDoc(doc(db, 'admins', user.uid))
+    return snapshot.exists() ? 'developer' : null
+  } catch {
+    return null
+  }
 }

@@ -53,13 +53,10 @@ export function deleteProject(id) {
 }
 
 export async function listPublishedProjects() {
-  const q = query(
-    collection(db, PROJECTS_COLLECTION),
-    where('published', '==', true),
-    orderBy('order', 'asc'),
-  )
+  const q = query(collection(db, PROJECTS_COLLECTION), where('published', '==', true))
   const snapshot = await getDocs(q)
-  return snapshot.docs.map((document) => ({ id: document.id, ...document.data() }))
+  const projects = snapshot.docs.map((document) => ({ id: document.id, ...document.data() }))
+  return projects.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 }
 
 export async function getPublishedProjectBySlug(slug) {

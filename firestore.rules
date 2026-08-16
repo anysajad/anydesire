@@ -1,12 +1,33 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isAdmin() {
+    function isOwner() {
       return request.auth != null && request.auth.uid == 'TygX6igvhObTbQLSJpTAtmNXkBC3';
     }
 
+    function isDeveloper() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isAdmin() {
+      return isOwner() || isDeveloper();
+    }
+
     function isPublished() {
-      return resource != null && resource.data.published == true;
+      return resource != null
+        && 'published' in resource.data
+        && resource.data.published == true;
+    }
+
+    // Developer allow-list. The owner manages it; each developer may read
+    // their own document. The owner document (by owner UID) can never be
+    // created, updated, or deleted.
+    match /admins/{uid} {
+      allow read: if isOwner() || (request.auth != null && request.auth.uid == uid);
+      allow create: if isOwner() && uid != 'TygX6igvhObTbQLSJpTAtmNXkBC3';
+      allow update: if isOwner() && uid != 'TygX6igvhObTbQLSJpTAtmNXkBC3';
+      allow delete: if isOwner() && uid != 'TygX6igvhObTbQLSJpTAtmNXkBC3';
     }
 
     match /projects/{projectId} {

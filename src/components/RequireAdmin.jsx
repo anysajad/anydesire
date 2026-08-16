@@ -1,21 +1,32 @@
 import { useEffect, useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import {
-  getCurrentUser,
-  isAdmin,
-  onAuthStateChange,
-  signOutUser,
-} from '../lib/auth.js'
+import { getCurrentUser, getUserRole, onAuthStateChange, signOutUser } from '../lib/auth.js'
 
 function RequireAdmin() {
-  const [authState, setAuthState] = useState({ ready: false, user: getCurrentUser() })
+  const [authState, setAuthState] = useState({
+    ready: false,
+    user: getCurrentUser(),
+    role: null,
+  })
   const location = useLocation()
 
   useEffect(() => {
+    let cancelled = false
     const unsubscribe = onAuthStateChange((user) => {
-      setAuthState({ ready: true, user })
+      if (cancelled) return
+      if (!user) {
+        setAuthState({ ready: true, user: null, role: null })
+        return
+      }
+      setAuthState({ ready: false, user })
+      getUserRole(user).then((role) => {
+        if (!cancelled) setAuthState({ ready: true, user, role })
+      })
     })
-    return unsubscribe
+    return () => {
+      cancelled = true
+      unsubscribe()
+    }
   }, [])
 
   if (!authState.ready) {
@@ -26,7 +37,7 @@ function RequireAdmin() {
     return <Navigate to="/admin/login" replace state={{ from: location }} />
   }
 
-  if (!isAdmin(authState.user)) {
+  if (!authState.role) {
     return (
       <div className="panel">
         <h1>Access denied</h1>
@@ -38,7 +49,7 @@ function RequireAdmin() {
     )
   }
 
-  return <Outlet />
+  return <Outlet context={{ role: authState.role }} />
 }
 
 export default RequireAdmin

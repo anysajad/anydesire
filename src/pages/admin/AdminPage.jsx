@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useOutletContext } from 'react-router-dom'
 import ProjectForm from '../../components/ProjectForm.jsx'
 import { getCurrentUser, signOutUser } from '../../lib/auth.js'
 import {
@@ -12,6 +12,7 @@ import {
 
 function AdminPage() {
   const user = getCurrentUser()
+  const { role } = useOutletContext()
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -103,7 +104,12 @@ function AdminPage() {
       <header className="admin-header">
         <div>
           <h1>AnyDesire Admin</h1>
-          <p className="admin-subtitle">Admin area · {user?.email}</p>
+          <p className="admin-subtitle">
+            Admin area · {user?.email} ·{' '}
+            <span className={`role-badge ${role === 'owner' ? 'role-owner' : ''}`}>
+              {role === 'owner' ? 'Owner' : 'Developer'}
+            </span>
+          </p>
         </div>
         <button type="button" onClick={() => signOutUser()}>
           Logout
@@ -116,6 +122,9 @@ function AdminPage() {
         </button>
         <Link to="/admin/settings" className="admin-link">
           Contact Information
+        </Link>
+        <Link to="/admin/developers" className="admin-link">
+          Developers
         </Link>
         {notice && <span className="notice">{notice}</span>}
       </div>
