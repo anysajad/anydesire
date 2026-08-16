@@ -168,7 +168,9 @@ function ProjectPage() {
             </header>
 
             {project.coverImage && (
-              <img className="project-cover" src={project.coverImage} alt={title} loading="lazy" />
+              <div className="project-cover">
+                <img src={project.coverImage} alt={title} loading="lazy" />
+              </div>
             )}
 
             {paragraphs.length > 0 && (
