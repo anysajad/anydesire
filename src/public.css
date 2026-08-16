@@ -30,11 +30,12 @@
 
 .nav-links a {
   font-weight: 500;
+  color: var(--muted);
   transition: color 0.15s ease;
 }
 
 .nav-links a:hover {
-  color: var(--muted);
+  color: var(--text);
 }
 
 .lang-toggle {
@@ -245,21 +246,30 @@
 .build-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
+  gap: 2rem;
+  counter-reset: build;
 }
 
 .build-item {
-  border: 1px solid var(--border);
-  padding: 1.25rem;
+  counter-increment: build;
+}
+
+.build-item::before {
+  content: '0' counter(build);
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
 }
 
 .build-item h3 {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.15rem;
+  margin-bottom: 0.4rem;
 }
 
 .build-item p {
   color: var(--muted);
+  font-size: 0.95rem;
 }
 
 /* ---------- Contact ---------- */
@@ -382,6 +392,8 @@
 
 .project-cover {
   width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
   border: 1px solid var(--border);
   margin-bottom: clamp(2.5rem, 6vw, 4rem);
 }
@@ -606,4 +618,21 @@
   .project-nav-next {
     text-align: start;
   }
+}
+
+/* ---------- Arabic typography ---------- */
+
+/* Arabic is a connected script: negative letter-spacing on headings visually
+   breaks the glyphs, and tight line-heights can clip ascenders/descenders. */
+
+html[lang='ar'] h1,
+html[lang='ar'] h2,
+html[lang='ar'] h3,
+html[lang='ar'] .philosophy-statement {
+  letter-spacing: 0;
+}
+
+html[lang='ar'] .hero-title,
+html[lang='ar'] .project-header h1 {
+  line-height: 1.2;
 }
