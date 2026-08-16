@@ -162,7 +162,7 @@ function AdminPage() {
             ))}
             {projects.length === 0 && (
               <tr>
-                <td colSpan="6" className="muted">
+                <td colSpan="6" className="table-empty">
                   No projects yet.
                 </td>
               </tr>

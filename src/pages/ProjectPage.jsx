@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
@@ -14,10 +14,14 @@ function ProjectPage() {
   const [prevProject, setPrevProject] = useState(null)
   const [nextProject, setNextProject] = useState(null)
   const [lightbox, setLightbox] = useState(null)
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [touchX, setTouchX] = useState(null)
+  const activeThumbRef = useRef(null)
 
   useEffect(() => {
     let cancelled = false
     setStatus('loading')
+    setActiveIndex(0)
     Promise.all([getPublishedProjectBySlug(slug), listPublishedProjects()])
       .then(([project, projects]) => {
         if (cancelled) return
@@ -57,6 +61,10 @@ function ProjectPage() {
     }
   }, [lightbox, project])
 
+  useEffect(() => {
+    activeThumbRef.current?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' })
+  }, [activeIndex])
+
   const title = language === 'ar' ? project?.titleAr || project?.title : project?.title || project?.titleAr
   const shortDescription =
     language === 'ar'
@@ -71,6 +79,24 @@ function ProjectPage() {
     : []
   const screenshots = project?.screenshots ?? []
   const features = project?.features ?? []
+
+  const goPrev = () =>
+    setActiveIndex((activeIndex + screenshots.length - 1) % screenshots.length)
+  const goNext = () => setActiveIndex((activeIndex + 1) % screenshots.length)
+
+  function onTouchStart(event) {
+    setTouchX(event.touches[0].clientX)
+  }
+
+  function onTouchEnd(event) {
+    if (touchX === null) return
+    const delta = event.changedTouches[0].clientX - touchX
+    if (Math.abs(delta) > 40) {
+      if (delta < 0) goNext()
+      else goPrev()
+    }
+    setTouchX(null)
+  }
 
   usePageMeta(
     project ? `${title} — AnyDesire` : t.meta.title,
@@ -170,27 +196,70 @@ function ProjectPage() {
             )}
 
             {screenshots.length > 0 && (
-              <section className="project-gallery">
+              <section
+                className="project-gallery"
+                onKeyDown={(event) => {
+                  if (event.key === 'ArrowLeft') {
+                    event.preventDefault()
+                    goPrev()
+                  }
+                  if (event.key === 'ArrowRight') {
+                    event.preventDefault()
+                    goNext()
+                  }
+                }}
+              >
                 <h2 className="section-heading">{t.project.gallery}</h2>
-                <button
-                  type="button"
-                  className="gallery-featured"
-                  onClick={() => setLightbox(0)}
-                  aria-label={`${title} 1`}
-                >
-                  <img src={screenshots[0]} alt={`${title} 1`} loading="lazy" />
-                </button>
+                <div className="shot-viewer">
+                  {screenshots.length > 1 && (
+                    <button
+                      type="button"
+                      className="shot-nav shot-prev"
+                      onClick={goPrev}
+                      aria-label={t.project.nav.previous}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    className="shot-main"
+                    onClick={() => setLightbox(activeIndex)}
+                    aria-label={`${title} ${activeIndex + 1}`}
+                    onTouchStart={onTouchStart}
+                    onTouchEnd={onTouchEnd}
+                  >
+                    <img
+                      src={screenshots[activeIndex]}
+                      alt={`${title} ${activeIndex + 1}`}
+                      loading="lazy"
+                    />
+                  </button>
+                  {screenshots.length > 1 && (
+                    <button
+                      type="button"
+                      className="shot-nav shot-next"
+                      onClick={goNext}
+                      aria-label={t.project.nav.next}
+                    />
+                  )}
+                </div>
                 {screenshots.length > 1 && (
-                  <div className="gallery-grid">
-                    {screenshots.slice(1).map((src, index) => (
+                  <p className="shot-counter" aria-live="polite">
+                    {activeIndex + 1} / {screenshots.length}
+                  </p>
+                )}
+                {screenshots.length > 1 && (
+                  <div className="shot-thumbs" role="tablist" aria-label={t.project.gallery}>
+                    {screenshots.map((src, index) => (
                       <button
                         type="button"
-                        className="gallery-item"
                         key={index}
-                        onClick={() => setLightbox(index + 1)}
-                        aria-label={`${title} ${index + 2}`}
+                        ref={index === activeIndex ? activeThumbRef : null}
+                        className={`shot-thumb${index === activeIndex ? ' is-active' : ''}`}
+                        onClick={() => setActiveIndex(index)}
+                        aria-selected={index === activeIndex}
+                        role="tab"
                       >
-                        <img src={src} alt={`${title} ${index + 2}`} loading="lazy" />
+                        <img src={src} alt={`${title} ${index + 1}`} loading="lazy" />
                       </button>
                     ))}
                   </div>

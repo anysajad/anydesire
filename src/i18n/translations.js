@@ -58,7 +58,7 @@ export const translations = {
     project: {
       back: 'Back to work',
       error: 'Could not load this project.',
-      gallery: 'Gallery',
+      gallery: 'Screenshots',
       close: 'Close',
       notFoundTitle: 'Project not found',
       notFoundText: 'This project does not exist or is not published.',
@@ -150,7 +150,7 @@ export const translations = {
     project: {
       back: 'العودة إلى الأعمال',
       error: 'تعذّر تحميل هذا المشروع.',
-      gallery: 'صور المشروع',
+      gallery: 'لقطات الشاشة',
       close: 'إغلاق',
       notFoundTitle: 'المشروع غير موجود',
       notFoundText: 'هذا المشروع غير موجود أو غير منشور.',
