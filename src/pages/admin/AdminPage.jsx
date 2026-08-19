@@ -117,7 +117,11 @@ function AdminPage() {
       </header>
 
       <div className="admin-toolbar">
-        <button type="button" onClick={() => setView({ mode: 'add', projectId: newProjectId() })}>
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={() => setView({ mode: 'add', projectId: newProjectId() })}
+        >
           + Add Project
         </button>
         <Link to="/admin/settings" className="admin-link">
@@ -162,6 +166,7 @@ function AdminPage() {
                   </button>
                   <button
                     type="button"
+                    className="btn-danger"
                     onClick={() => handleDelete(project)}
                   >
                     Delete

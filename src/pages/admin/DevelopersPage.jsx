@@ -108,7 +108,11 @@ function DevelopersPage() {
       </p>
 
       <div className="admin-toolbar">
-        <button type="button" onClick={() => setFormOpen((open) => !open)}>
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={() => setFormOpen((open) => !open)}
+        >
           {formOpen ? 'Close' : '+ Add Developer'}
         </button>
         {notice && <span className="notice">{notice}</span>}
@@ -207,6 +211,7 @@ function DevelopersPage() {
                   <td className="actions">
                     <button
                       type="button"
+                      className="btn-danger"
                       onClick={() => handleRemove(developer)}
                     >
                       Remove
