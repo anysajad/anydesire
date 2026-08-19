@@ -41,7 +41,7 @@
 }
 
 .nav-links a:hover {
-  color: var(--teal-strong);
+  color: var(--accent-strong);
 }
 
 .lang-toggle {
@@ -53,9 +53,9 @@
 }
 
 .lang-toggle:hover {
-  background: var(--teal-dim);
-  border-color: var(--teal);
-  color: var(--teal);
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* ---------- Sections ---------- */
@@ -72,10 +72,27 @@
   margin-bottom: 2rem;
 }
 
+.section-heading::after {
+  content: '';
+  display: block;
+  width: 2.75rem;
+  height: 2px;
+  margin-top: 0.55rem;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), rgba(169, 112, 255, 0.15));
+}
+
 /* ---------- Hero ---------- */
 
 .hero {
   padding-block: clamp(4.5rem, 12vw, 9rem);
+  background:
+    radial-gradient(
+      ellipse 90% 60% at 50% -12%,
+      rgba(169, 112, 255, 0.1),
+      rgba(110, 60, 188, 0.06) 45%,
+      transparent 72%
+    );
 }
 
 .hero-title {
@@ -108,8 +125,8 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.8rem 1.4rem;
-  border: 1px solid var(--teal-border);
-  color: var(--teal);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
   font-weight: 600;
   font-size: 1rem;
   transition:
@@ -119,9 +136,9 @@
 }
 
 .btn:hover {
-  background: var(--teal-dim);
-  border-color: var(--teal);
-  color: var(--teal-strong);
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent-strong);
 }
 
 .btn-primary {
@@ -153,7 +170,7 @@
 }
 
 .project-card:hover {
-  border-color: var(--teal-border);
+  border-color: var(--accent-border);
 }
 
 .project-card-cover {
@@ -342,7 +359,7 @@
 }
 
 .footer-links a:hover {
-  color: var(--teal-strong);
+  color: var(--accent-strong);
 }
 
 .footer-bottom {
@@ -377,8 +394,8 @@
 }
 
 .project-back:hover {
-  border-color: var(--teal);
-  color: var(--teal-strong);
+  border-color: var(--accent);
+  color: var(--accent-strong);
 }
 
 html[lang='ar'] .project-back::before {
@@ -477,7 +494,7 @@ html[lang='ar'] .project-back::before {
 .features-num {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--teal);
+  color: var(--accent);
 }
 
 /* ---------- Screenshot viewer ---------- */
@@ -503,7 +520,7 @@ html[lang='ar'] .project-back::before {
 }
 
 .shot-main:hover {
-  border-color: var(--teal-border);
+  border-color: var(--accent-border);
 }
 
 .shot-main img {
@@ -529,8 +546,8 @@ html[lang='ar'] .project-back::before {
 }
 
 .shot-nav:hover {
-  border-color: var(--teal);
-  color: var(--teal-strong);
+  border-color: var(--accent);
+  color: var(--accent-strong);
 }
 
 .shot-prev::before {
@@ -554,7 +571,7 @@ html[lang='ar'] .project-back::before {
   margin: 0.75rem 0 1rem;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--teal);
+  color: var(--accent);
 }
 
 .shot-thumbs {
@@ -575,12 +592,12 @@ html[lang='ar'] .project-back::before {
 }
 
 .shot-thumb:hover {
-  border-color: var(--teal-border);
+  border-color: var(--accent-border);
 }
 
 .shot-thumb.is-active {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 1px var(--teal);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
 }
 
 .shot-thumb img {
@@ -622,9 +639,9 @@ html[lang='ar'] .project-back::before {
 }
 
 .lightbox-close:hover {
-  background: var(--teal-dim);
-  border-color: var(--teal);
-  color: var(--teal-strong);
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent-strong);
 }
 
 .lightbox-prev,
@@ -671,8 +688,8 @@ html[lang='ar'] .project-back::before {
 
 .lightbox-prev:hover,
 .lightbox-next:hover {
-  border-color: var(--teal);
-  color: var(--teal-strong);
+  border-color: var(--accent);
+  color: var(--accent-strong);
 }
 
 /* ---------- Project information ---------- */
@@ -728,7 +745,7 @@ html[lang='ar'] .project-back::before {
 }
 
 .project-nav-link:hover span:last-child {
-  color: var(--teal-strong);
+  color: var(--accent-strong);
 }
 
 .project-nav-next {

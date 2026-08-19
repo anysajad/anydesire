@@ -1,21 +1,19 @@
 :root {
-  --bg: #0b0f14;
-  --bg-secondary: #111827;
-  --bg-soft: #1a1f29;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
-  --border: #27303b;
-  --border-strong: #3b4654;
-  --accent: #d4af37;
-  --accent-strong: #e2c14f;
-  --accent-dim: rgba(212, 175, 55, 0.12);
-  --accent-border: rgba(212, 175, 55, 0.35);
-  --teal: #00bfa6;
-  --teal-strong: #2cceb8;
-  --teal-dim: rgba(0, 191, 166, 0.12);
-  --teal-border: rgba(0, 191, 166, 0.38);
-  --danger: #e28b7a;
-  --danger-dim: rgba(226, 139, 122, 0.12);
+  --bg: #09080f;
+  --bg-secondary: #100d1a;
+  --bg-soft: #171225;
+  --text: #f4f1fa;
+  --muted: #a8a1b8;
+  --border: #2a2438;
+  --border-strong: #463a5c;
+  --accent: #a970ff;
+  --accent-strong: #c18aff;
+  --accent-dim: rgba(169, 112, 255, 0.12);
+  --accent-border: rgba(169, 112, 255, 0.38);
+  --purple-deep: #6e3cbc;
+  --danger: #e07a8a;
+  --danger-dim: rgba(224, 122, 138, 0.12);
+  --success: #73c69a;
   font-family:
     'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Roboto,
     'Noto Sans Arabic', sans-serif;
