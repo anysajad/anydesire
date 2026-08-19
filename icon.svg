@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" role="img" aria-labelledby="title desc">
+  <title id="title">AnyDesire logo</title>
+  <desc id="desc">AnyDesire abstract A monogram with a flowing ribbon.</desc>
+  <defs>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c18aff"/>
+      <stop offset="48%" stop-color="#a970ff"/>
+      <stop offset="100%" stop-color="#6e3cbc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Monogram constructed with balanced golden-ratio-inspired proportions -->
+  <g transform="translate(65 42)">
+    <!-- Left/right A structure -->
+    <path
+      d="M20 292
+         L154 34
+         Q165 14 182 14
+         Q199 14 210 34
+         L338 292
+         L275 292
+         L182 105
+         L83 292 Z"
+      fill="url(#purple)"/>
+
+    <!-- Flowing ribbon -->
+    <path
+      d="M20 292
+         C78 292 108 275 142 244
+         C179 210 216 176 257 176
+         C289 176 315 190 344 211
+         L391 244
+         C355 224 323 216 294 218
+         C257 221 229 241 198 264
+         C158 294 115 315 65 315
+         C46 315 31 308 20 292 Z"
+      fill="url(#purple)"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g font-family="Inter, Arial, Helvetica, sans-serif" font-weight="700">
+    <text x="405" y="208" font-size="78" fill="#f4f1fa" letter-spacing="-3">Any</text>
+    <text x="552" y="208" font-size="78" fill="url(#purple)" letter-spacing="-3">Desire</text>
+  </g>
+
+  <!-- Studio descriptor -->
+  <g fill="#a8a1b8" font-family="Inter, Arial, Helvetica, sans-serif" font-size="16" letter-spacing="7">
+    <text x="410" y="244">SOFTWARE STUDIO</text>
+  </g>
+  <g stroke="#a970ff" stroke-width="2">
+    <line x1="405" y1="238" x2="388" y2="238"/>
+    <line x1="714" y1="238" x2="731" y2="238"/>
+  </g>
+</svg>

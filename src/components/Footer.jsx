@@ -12,7 +12,10 @@ function Footer() {
     <footer className="site-footer">
       <div className="container footer-inner">
         <div>
-          <div className="brand">AnyDesire</div>
+          <div className="brand">
+            <img src="/icon-only.svg" className="brand-icon" alt="" aria-hidden="true" />
+            AnyDesire
+          </div>
           <p className="muted">{t.footer.tagline}</p>
         </div>
         <div className="footer-links">

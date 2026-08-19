@@ -27,6 +27,7 @@ function LoginPage() {
 
   return (
     <div className="panel">
+      <img src="/icon-only.svg" className="panel-icon" alt="" aria-hidden="true" />
       <h1>AnyDesire Admin</h1>
       <form onSubmit={handleSubmit}>
         <label>

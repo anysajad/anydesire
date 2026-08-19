@@ -17,11 +17,20 @@
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   font-weight: 700;
   font-size: 1.15rem;
   letter-spacing: -0.01em;
   color: var(--accent);
   transition: color 0.15s ease;
+}
+
+.brand-icon {
+  height: 1.35rem;
+  width: auto;
+  flex-shrink: 0;
 }
 
 .brand:hover {

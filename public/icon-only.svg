@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="85 56 371 301" role="img" aria-label="AnyDesire icon">
+  <defs>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c18aff"/>
+      <stop offset="48%" stop-color="#a970ff"/>
+      <stop offset="100%" stop-color="#6e3cbc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Monogram only: exact geometry from icon.svg symbol (text/wordmark excluded) -->
+  <g transform="translate(65 42)">
+    <!-- Left/right A structure -->
+    <path
+      d="M20 292
+         L154 34
+         Q165 14 182 14
+         Q199 14 210 34
+         L338 292
+         L275 292
+         L182 105
+         L83 292 Z"
+      fill="url(#purple)"/>
+
+    <!-- Flowing ribbon -->
+    <path
+      d="M20 292
+         C78 292 108 275 142 244
+         C179 210 216 176 257 176
+         C289 176 315 190 344 211
+         L391 244
+         C355 224 323 216 294 218
+         C257 221 229 241 198 264
+         C158 294 115 315 65 315
+         C46 315 31 308 20 292 Z"
+      fill="url(#purple)"/>
+  </g>
+</svg>

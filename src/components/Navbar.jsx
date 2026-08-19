@@ -8,6 +8,7 @@ function Navbar() {
     <header className="site-header">
       <nav className="container nav" aria-label="Main">
         <Link to="/" className="brand">
+          <img src="/icon-only.svg" className="brand-icon" alt="" aria-hidden="true" />
           AnyDesire
         </Link>
         <div className="nav-links">
