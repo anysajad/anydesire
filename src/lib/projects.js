@@ -2,6 +2,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   limit,
   orderBy,
@@ -12,6 +13,7 @@ import {
   where,
 } from 'firebase/firestore'
 import { db } from './firebase.js'
+import { getAdminName } from './auth.js'
 
 const PROJECTS_COLLECTION = 'projects'
 
@@ -64,20 +66,47 @@ export function newProjectId() {
   return doc(collection(db, PROJECTS_COLLECTION)).id
 }
 
-export function createProject(id, data, creator) {
+export async function createProject(id, data, user) {
+  const name = await getAdminName(user.uid)
   return setDoc(doc(db, PROJECTS_COLLECTION, id), {
     ...data,
-    createdByUid: creator.uid,
-    createdByName: creator.displayName || creator.email || 'Unknown',
+    createdByUid: user.uid,
+    createdByName: name,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })
 }
 
-export function updateProject(id, data) {
-  const { createdByUid: _uid, createdByName: _name, createdAt: _created, slug: _slug, ...safeData } = data
+export async function updateProject(id, data, user) {
+  const {
+    createdByUid: _cUid,
+    createdByName: _cName,
+    createdAt: _cAt,
+    slug: _slug,
+    ...rest
+  } = data
+
+  // Detect unpublished → published transition
+  let publisherFields = {}
+  if (user) {
+    const existingSnap = await getDoc(doc(db, PROJECTS_COLLECTION, id))
+    const existing = existingSnap.exists() ? existingSnap.data() : {}
+    const wasPublished = existing.published === true
+    const isNowPublished = rest.published === true
+
+    if (!wasPublished && isNowPublished) {
+      const pubName = await getAdminName(user.uid)
+      publisherFields = {
+        publishedByUid: user.uid,
+        publishedByName: pubName,
+        publishedAt: serverTimestamp(),
+      }
+    }
+  }
+
   return updateDoc(doc(db, PROJECTS_COLLECTION, id), {
-    ...safeData,
+    ...rest,
+    ...publisherFields,
     updatedAt: serverTimestamp(),
   })
 }

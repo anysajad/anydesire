@@ -11,9 +11,9 @@ import {
 } from '../../lib/projects.js'
 
 function formatDate(date) {
-  if (!date) return '—'
+  if (!date) return null
   const d = date.toDate ? date.toDate() : new Date(date)
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function AdminPage() {
@@ -59,7 +59,7 @@ function AdminPage() {
 
   async function handleUpdate(project, data) {
     try {
-      await updateProject(project.id, data)
+      await updateProject(project.id, data, user)
       await loadProjects()
       setView('list')
       showNotice('Project updated.')
@@ -150,9 +150,10 @@ function AdminPage() {
               <th>Title</th>
               <th>Status</th>
               <th>Published</th>
+              <th>Added By</th>
+              <th>Publisher</th>
               <th>Featured</th>
               <th>Order</th>
-              <th>Created</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -162,13 +163,18 @@ function AdminPage() {
                 <td>{project.title}</td>
                 <td>{project.status}</td>
                 <td>{project.published ? 'Yes' : 'No'}</td>
-                <td>{project.featured ? 'Yes' : 'No'}</td>
-                <td>{project.order}</td>
                 <td>
                   {project.createdByName
                     ? `${project.createdByName} · ${formatDate(project.createdAt)}`
-                    : formatDate(project.createdAt)}
+                    : `Null${formatDate(project.createdAt) ? ` · ${formatDate(project.createdAt)}` : ''}`}
                 </td>
+                <td>
+                  {project.publishedByName
+                    ? `${project.publishedByName} · ${formatDate(project.publishedAt)}`
+                    : `Null${formatDate(project.publishedAt) ? ` · ${formatDate(project.publishedAt)}` : ''}`}
+                </td>
+                <td>{project.featured ? 'Yes' : 'No'}</td>
+                <td>{project.order}</td>
                 <td className="actions">
                   <button
                     type="button"
@@ -188,7 +194,7 @@ function AdminPage() {
             ))}
             {projects.length === 0 && (
               <tr>
-                <td colSpan="7" className="table-empty">
+                <td colSpan="8" className="table-empty">
                   No projects yet.
                 </td>
               </tr>

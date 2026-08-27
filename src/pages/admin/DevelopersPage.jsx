@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getCurrentUser, OWNER_UID } from '../../lib/auth.js'
+import { getCurrentUser, getAdminName, OWNER_UID } from '../../lib/auth.js'
 import {
   addDeveloper,
   listDevelopers,
   removeDeveloper,
 } from '../../lib/developers.js'
 
-const emptyForm = { uid: '', email: '', displayName: '' }
+const emptyForm = { uid: '', email: '', name: '' }
 
 function DevelopersPage() {
   const owner = getCurrentUser()
@@ -60,7 +60,7 @@ function DevelopersPage() {
     setFormError('')
     setSaving(true)
     try {
-      await addDeveloper({ uid, email, displayName: form.displayName.trim() })
+      await addDeveloper({ uid, email, name: form.name.trim() })
       setForm(emptyForm)
       setFormOpen(false)
       await load()
@@ -74,7 +74,7 @@ function DevelopersPage() {
 
   async function handleRemove(developer) {
     if (developer.uid === OWNER_UID) return
-    if (!window.confirm(`Remove developer "${developer.displayName || developer.email || developer.uid}"?`)) {
+    if (!window.confirm(`Remove developer "${developer.name || developer.email || developer.uid}"?`)) {
       return
     }
     try {
@@ -86,7 +86,11 @@ function DevelopersPage() {
     }
   }
 
-  const ownerName = owner?.displayName || '—'
+  const [ownerName, setOwnerName] = useState(null)
+
+  useEffect(() => {
+    getAdminName(OWNER_UID).then(setOwnerName)
+  }, [])
 
   return (
     <div className="admin-container">
@@ -141,11 +145,11 @@ function DevelopersPage() {
               />
             </label>
             <label className="field">
-              <span>Display name (optional)</span>
+              <span>Name</span>
               <input
                 type="text"
-                value={form.displayName}
-                onChange={(event) => setField('displayName', event.target.value)}
+                value={form.name}
+                onChange={(event) => setField('name', event.target.value)}
                 placeholder="Ahmed"
               />
             </label>
@@ -193,7 +197,7 @@ function DevelopersPage() {
                 </td>
                 <td className="mono">{OWNER_UID}</td>
                 <td>{owner?.email || '—'}</td>
-                <td>{ownerName}</td>
+                <td>{ownerName ?? 'Null'}</td>
                 <td>—</td>
                 <td>
                   <span className="muted">—</span>
@@ -206,7 +210,7 @@ function DevelopersPage() {
                   </td>
                   <td className="mono">{developer.uid}</td>
                   <td>{developer.email || '—'}</td>
-                  <td>{developer.displayName || '—'}</td>
+                  <td>{developer.name || 'Null'}</td>
                   <td>{developer.createdAt ? new Date(developer.createdAt.toDate ? developer.createdAt.toDate() : developer.createdAt).toLocaleDateString() : '—'}</td>
                   <td className="actions">
                     <button

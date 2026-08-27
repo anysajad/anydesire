@@ -18,11 +18,11 @@ export async function listDevelopers() {
   return snapshot.docs.map((document) => ({ uid: document.id, ...document.data() }))
 }
 
-export function addDeveloper({ uid, email, displayName }) {
+export function addDeveloper({ uid, email, name }) {
   return setDoc(doc(db, DEVELOPERS_COLLECTION, uid), {
     uid,
     email,
-    displayName: displayName || '',
+    name: name || '',
     createdAt: serverTimestamp(),
   })
 }

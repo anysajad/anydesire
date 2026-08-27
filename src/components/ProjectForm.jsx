@@ -199,6 +199,7 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
 
   const createdDate = formatDate(initialData?.createdAt)
   const updatedDate = formatDate(initialData?.updatedAt)
+  const publishedDate = formatDate(initialData?.publishedAt)
 
   return (
     <form className="project-form" onSubmit={handleSubmit}>
@@ -219,14 +220,10 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
         </div>
       </div>
 
-      {isEdit && (initialData.createdByName || createdDate || updatedDate) && (
+      {isEdit && (
         <div className="project-meta">
-          {initialData.createdByName && createdDate && (
-            <span>Created by {initialData.createdByName} · {createdDate}</span>
-          )}
-          {!initialData.createdByName && createdDate && (
-            <span>Created · {createdDate}</span>
-          )}
+          <span>Created by {initialData.createdByName ?? 'Null'}{createdDate ? ` · ${createdDate}` : ''}</span>
+          <span>Published by {initialData.publishedByName ?? 'Null'}{publishedDate ? ` · ${publishedDate}` : ''}</span>
           {updatedDate && (
             <span>Last updated · {updatedDate}</span>
           )}

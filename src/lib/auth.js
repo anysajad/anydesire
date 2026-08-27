@@ -41,3 +41,17 @@ export async function getUserRole(user) {
     return null
   }
 }
+
+// Resolves the authoritative admin name from Firestore /admins/{uid}.name.
+// Returns the name string if present, null if missing. Never falls back to email.
+export async function getAdminName(uid) {
+  if (!uid) return null
+  try {
+    const snap = await getDoc(doc(db, 'admins', uid))
+    if (!snap.exists()) return null
+    const data = snap.data()
+    return data.name || null
+  } catch {
+    return null
+  }
+}
