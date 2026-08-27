@@ -256,30 +256,6 @@
   max-width: 60ch;
 }
 
-/* ---------- Philosophy ---------- */
-
-.philosophy {
-  text-align: center;
-  border-top: 1px solid var(--border);
-  padding-block: clamp(4rem, 10vw, 7rem);
-}
-
-.philosophy-statement {
-  font-size: clamp(1.8rem, 5vw, 3.4rem);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-  max-width: 20ch;
-  margin-inline: auto;
-  margin-bottom: 1rem;
-}
-
-.philosophy-text {
-  color: var(--muted);
-  max-width: 52ch;
-  margin-inline: auto;
-}
-
 /* ---------- What we build ---------- */
 
 .build-grid {
@@ -860,8 +836,7 @@ html[lang='ar'] .project-back::before {
 
 html[lang='ar'] h1,
 html[lang='ar'] h2,
-html[lang='ar'] h3,
-html[lang='ar'] .philosophy-statement {
+html[lang='ar'] h3 {
   letter-spacing: 0;
 }
 

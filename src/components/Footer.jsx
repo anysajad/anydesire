@@ -16,7 +16,6 @@ function Footer() {
             <img src="/icon-only.svg" className="brand-icon" alt="" aria-hidden="true" />
             AnyDesire
           </div>
-          <p className="muted">{t.footer.tagline}</p>
         </div>
         <div className="footer-links">
           {settings &&

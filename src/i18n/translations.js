@@ -28,11 +28,6 @@ export const translations = {
       heading: 'About',
       text: 'AnyDesire is a team of Iraqi engineers who enjoy turning ideas into useful software. Some projects begin as private requests. Others begin as ideas we simply wanted to build.',
     },
-    philosophy: {
-      heading: 'Philosophy',
-      statement: 'Happy customer = Happy Life',
-      text: 'We care about the thing after the code: whether the person using what we built is actually happy with it.',
-    },
     build: {
       heading: 'What We Build',
       items: [
@@ -49,10 +44,8 @@ export const translations = {
       instagram: 'Instagram',
       telegram: 'Telegram',
       whatsapp: 'WhatsApp',
-      action: 'Start a project',
     },
     footer: {
-      tagline: 'A team of Iraqi engineers turning thoughts into the fabric of reality.',
       rights: 'All rights reserved.',
     },
     project: {
@@ -120,11 +113,6 @@ export const translations = {
       heading: 'من نحن',
       text: 'AnyDesire فريق من المهندسين العراقيين يستمتعون بتحويل الأفكار إلى برمجيات مفيدة. بعض المشاريع تبدأ كطلبات خاصة، وبعضها الآخر يبدأ كفكرة أردنا بناءها ببساطة.',
     },
-    philosophy: {
-      heading: 'فلسفتنا',
-      statement: 'الزبون السعيد = حياة سعيدة',
-      text: 'نحن نهتم بما يأتي بعد الكود: هل الشخص الذي يستخدم ما بنيناه سعيدٌ به فعلاً؟',
-    },
     build: {
       heading: 'ماذا نبني',
       items: [
@@ -141,10 +129,8 @@ export const translations = {
       instagram: 'إنستغرام',
       telegram: 'تيليغرام',
       whatsapp: 'واتساب',
-      action: 'ابدأ مشروعك',
     },
     footer: {
-      tagline: 'فريق من المهندسين العراقيين يحوّلون الأفكار إلى واقع ملموس.',
       rights: 'جميع الحقوق محفوظة.',
     },
     project: {

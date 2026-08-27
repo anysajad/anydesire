@@ -27,9 +27,6 @@ function Contact() {
                 </a>
               ) : null,
             )}
-          <a href="/#work" className="btn btn-primary">
-            {t.contact.action}
-          </a>
         </div>
       </div>
     </section>

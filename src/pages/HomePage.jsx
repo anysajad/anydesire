@@ -5,7 +5,6 @@ import Footer from '../components/Footer.jsx'
 import Hero from '../components/home/Hero.jsx'
 import SelectedWork from '../components/home/SelectedWork.jsx'
 import About from '../components/home/About.jsx'
-import Philosophy from '../components/home/Philosophy.jsx'
 import WhatWeBuild from '../components/home/WhatWeBuild.jsx'
 import Contact from '../components/home/Contact.jsx'
 import { useLanguage } from '../i18n/useLanguage.js'
@@ -32,7 +31,6 @@ function HomePage() {
         <Hero />
         <SelectedWork />
         <About />
-        <Philosophy />
         <WhatWeBuild />
         <Contact />
       </main>
