@@ -45,12 +45,7 @@ function normalizeWhatsApp(value) {
 export async function getContactSettings() {
   const snapshot = await getDoc(doc(db, CONTACT_DOC))
   if (!snapshot.exists()) return { ...fallbackContact }
-  return {
-    instagram: snapshot.data().instagram || '',
-    telegram: snapshot.data().telegram || '',
-    whatsapp: snapshot.data().whatsapp || '',
-    github: snapshot.data().github || '',
-  }
+  return normalizeContact(snapshot.data())
 }
 
 export function updateContactSettings(data) {

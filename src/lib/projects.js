@@ -23,6 +23,37 @@ export const PROJECT_STATUSES = [
   'archived',
 ]
 
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[\s]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+function randomSuffix() {
+  const bytes = new Uint8Array(3)
+  crypto.getRandomValues(bytes)
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('')
+}
+
+export function generateSlug(title) {
+  const base = slugify(title) || 'project'
+  return `${base}-${randomSuffix()}`
+}
+
+export async function isSlugUnique(slug) {
+  const q = query(
+    collection(db, PROJECTS_COLLECTION),
+    where('slug', '==', slug),
+    limit(1),
+  )
+  const snapshot = await getDocs(q)
+  return snapshot.empty
+}
+
 export async function listProjects() {
   const q = query(collection(db, PROJECTS_COLLECTION), orderBy('order', 'asc'))
   const snapshot = await getDocs(q)
@@ -33,17 +64,20 @@ export function newProjectId() {
   return doc(collection(db, PROJECTS_COLLECTION)).id
 }
 
-export function createProject(id, data) {
+export function createProject(id, data, creator) {
   return setDoc(doc(db, PROJECTS_COLLECTION, id), {
     ...data,
+    createdByUid: creator.uid,
+    createdByName: creator.displayName || creator.email || 'Unknown',
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })
 }
 
 export function updateProject(id, data) {
+  const { createdByUid: _uid, createdByName: _name, createdAt: _created, slug: _slug, ...safeData } = data
   return updateDoc(doc(db, PROJECTS_COLLECTION, id), {
-    ...data,
+    ...safeData,
     updatedAt: serverTimestamp(),
   })
 }

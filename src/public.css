@@ -320,38 +320,13 @@
 
 .site-footer {
   border-top: 1px solid var(--border);
-  padding-block: 3rem 2rem;
-}
-
-.footer-inner {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 2rem;
-  margin-bottom: 2.5rem;
-}
-
-.footer-links {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  row-gap: 0.5rem;
-  gap: 1.25rem;
-}
-
-.footer-links a {
-  transition: color 0.15s ease;
-}
-
-.footer-links a:hover {
-  color: var(--accent-strong);
+  padding-block: 1.5rem;
 }
 
 .footer-bottom {
-  border-top: 1px solid var(--border);
-  padding-top: 1.5rem;
+  text-align: center;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 /* ---------- Project page ---------- */
@@ -788,11 +763,6 @@ html[lang='ar'] .project-back::before {
 
   .split {
     grid-template-columns: 1fr;
-  }
-
-  .footer-inner {
-    flex-direction: column;
-    gap: 1.5rem;
   }
 
   .shot-viewer {

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PROJECT_STATUSES } from '../lib/projects.js'
+import { PROJECT_STATUSES, generateSlug } from '../lib/projects.js'
 
 const defaults = {
   title: '',
@@ -25,7 +25,6 @@ const defaults = {
 const requiredFields = {
   title: 'Title',
   titleAr: 'Arabic title',
-  slug: 'Slug',
   shortDescription: 'Short description',
   shortDescriptionAr: 'Arabic short description',
   status: 'Status',
@@ -40,8 +39,8 @@ function toArray(value) {
 
 function isValidUrl(value) {
   try {
-    new URL(value)
-    return true
+    const url = new URL(value)
+    return url.protocol === 'http:' || url.protocol === 'https:'
   } catch {
     return false
   }
@@ -68,22 +67,40 @@ function validate(data) {
   return errors
 }
 
-function Field({ label, error, children }) {
+function Required() {
+  return <span className="required-mark" aria-label="required">*</span>
+}
+
+function Field({ label, required, error, children }) {
   return (
     <label className="field">
-      <span>{label}</span>
+      <span>
+        {label}
+        {required && <Required />}
+      </span>
       {children}
       {error && <span className="field-error">{error}</span>}
     </label>
   )
 }
 
-function FormGroup({ legend, children }) {
+function FormSection({ title, defaultOpen = true, children }) {
+  const [open, setOpen] = useState(defaultOpen)
   return (
-    <fieldset className="form-group">
-      <legend>{legend}</legend>
-      {children}
-    </fieldset>
+    <div className="form-section">
+      <button
+        type="button"
+        className="form-section-toggle"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
+        {title}
+        <span className="chevron">&#9660;</span>
+      </button>
+      <div className={`form-section-body${open ? '' : ' is-collapsed'}`}>
+        {children}
+      </div>
+    </div>
   )
 }
 
@@ -101,14 +118,26 @@ function ImagePreview({ url }) {
   )
 }
 
+function formatDate(date) {
+  if (!date) return null
+  const d = date.toDate ? date.toDate() : new Date(date)
+  return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
 function ProjectForm({ initialData, onSubmit, onCancel }) {
-  const [form, setForm] = useState(() => ({
-    ...defaults,
-    ...initialData,
-    technologies: initialData?.technologies?.join(', ') ?? '',
-    features: initialData?.features?.join(', ') ?? '',
-    screenshots: initialData?.screenshots ?? [],
-  }))
+  const isEdit = Boolean(initialData?.id)
+
+  const [form, setForm] = useState(() => {
+    const slug = isEdit ? (initialData.slug || '') : generateSlug(initialData?.title || '')
+    return {
+      ...defaults,
+      ...initialData,
+      slug,
+      technologies: initialData?.technologies?.join(', ') ?? '',
+      features: initialData?.features?.join(', ') ?? '',
+      screenshots: initialData?.screenshots ?? [],
+    }
+  })
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
 
@@ -168,11 +197,45 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
     }
   }
 
+  const createdDate = formatDate(initialData?.createdAt)
+  const updatedDate = formatDate(initialData?.updatedAt)
+
   return (
     <form className="project-form" onSubmit={handleSubmit}>
-      <FormGroup legend="Basic information">
+      <div className="form-sticky-header">
+        <span className="form-sticky-title">
+          {isEdit ? 'Edit Project' : 'New Project'}
+        </span>
+        <span className={`form-sticky-status${form.published ? ' is-published' : ''}`}>
+          {form.published ? 'Published' : 'Draft'}
+        </span>
+        <div className="form-sticky-actions">
+          <button type="button" className="btn-cancel" onClick={onCancel} disabled={saving}>
+            Cancel
+          </button>
+          <button type="submit" disabled={saving}>
+            {saving ? 'Saving...' : 'Save Project'}
+          </button>
+        </div>
+      </div>
+
+      {isEdit && (initialData.createdByName || createdDate || updatedDate) && (
+        <div className="project-meta">
+          {initialData.createdByName && createdDate && (
+            <span>Created by {initialData.createdByName} · {createdDate}</span>
+          )}
+          {!initialData.createdByName && createdDate && (
+            <span>Created · {createdDate}</span>
+          )}
+          {updatedDate && (
+            <span>Last updated · {updatedDate}</span>
+          )}
+        </div>
+      )}
+
+      <FormSection title="Essential Information">
         <div className="form-grid">
-          <Field label="Title" error={errors.title}>
+          <Field label="Title" required error={errors.title}>
             <input
               type="text"
               value={form.title}
@@ -180,46 +243,41 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
               placeholder="Debt Ledger"
             />
           </Field>
-          <Field label="Slug" error={errors.slug}>
+          <Field label="Arabic title" required error={errors.titleAr}>
             <input
               type="text"
-              value={form.slug}
-              onChange={(event) => setField('slug', event.target.value)}
-              placeholder="debt-ledger"
+              value={form.titleAr}
+              onChange={(event) => setField('titleAr', event.target.value)}
+              placeholder="دفتر الديون"
             />
           </Field>
         </div>
-      </FormGroup>
+        <div className="form-grid">
+          <Field label="Category" required error={errors.category}>
+            <input
+              type="text"
+              value={form.category}
+              onChange={(event) => setField('category', event.target.value)}
+              placeholder="Web Application"
+            />
+          </Field>
+          <Field label="Status" required error={errors.status}>
+            <select
+              value={form.status}
+              onChange={(event) => setField('status', event.target.value)}
+            >
+              {PROJECT_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+          </Field>
+        </div>
+      </FormSection>
 
-      <FormGroup legend="Arabic information">
-        <Field label="Arabic title" error={errors.titleAr}>
-          <input
-            type="text"
-            value={form.titleAr}
-            onChange={(event) => setField('titleAr', event.target.value)}
-            placeholder="دفتر الديون"
-          />
-        </Field>
-        <Field label="Arabic short description" error={errors.shortDescriptionAr}>
-          <textarea
-            rows="2"
-            value={form.shortDescriptionAr}
-            onChange={(event) => setField('shortDescriptionAr', event.target.value)}
-            placeholder="برنامج بسيط لإدارة ديون الزبائن لأصحاب المحلات."
-          />
-        </Field>
-        <Field label="Arabic full description">
-          <textarea
-            rows="4"
-            value={form.descriptionAr}
-            onChange={(event) => setField('descriptionAr', event.target.value)}
-            placeholder="اكتب وصفاً للمشروع وما المشكلة التي يحلها..."
-          />
-        </Field>
-      </FormGroup>
-
-      <FormGroup legend="Description">
-        <Field label="Short description" error={errors.shortDescription}>
+      <FormSection title="Descriptions">
+        <Field label="Short description" required error={errors.shortDescription}>
           <textarea
             rows="2"
             value={form.shortDescription}
@@ -235,34 +293,25 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
             placeholder="Describe what the project does, why it was built, and what problem it solves..."
           />
         </Field>
-      </FormGroup>
+        <Field label="Arabic short description" required error={errors.shortDescriptionAr}>
+          <textarea
+            rows="2"
+            value={form.shortDescriptionAr}
+            onChange={(event) => setField('shortDescriptionAr', event.target.value)}
+            placeholder="برنامج بسيط لإدارة ديون الزبائن لأصحاب المحلات."
+          />
+        </Field>
+        <Field label="Arabic full description">
+          <textarea
+            rows="4"
+            value={form.descriptionAr}
+            onChange={(event) => setField('descriptionAr', event.target.value)}
+            placeholder="اكتب وصفاً للمشروع وما المشكلة التي يحلها..."
+          />
+        </Field>
+      </FormSection>
 
-      <FormGroup legend="Classification / status">
-        <div className="form-grid">
-          <Field label="Category" error={errors.category}>
-            <input
-              type="text"
-              value={form.category}
-              onChange={(event) => setField('category', event.target.value)}
-              placeholder="Web Application"
-            />
-          </Field>
-          <Field label="Status" error={errors.status}>
-            <select
-              value={form.status}
-              onChange={(event) => setField('status', event.target.value)}
-            >
-              {PROJECT_STATUSES.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-          </Field>
-        </div>
-      </FormGroup>
-
-      <FormGroup legend="Technologies">
+      <FormSection title="Technologies" defaultOpen={false}>
         <Field label="Technologies (comma-separated)">
           <input
             type="text"
@@ -271,9 +320,9 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
             placeholder="React, Vite, Firebase"
           />
         </Field>
-      </FormGroup>
+      </FormSection>
 
-      <FormGroup legend="Features">
+      <FormSection title="Features" defaultOpen={false}>
         <Field label="Features (comma-separated)">
           <input
             type="text"
@@ -282,9 +331,9 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
             placeholder="Customer management, Debt tracking, Payment history"
           />
         </Field>
-      </FormGroup>
+      </FormSection>
 
-      <FormGroup legend="Images">
+      <FormSection title="Media" defaultOpen={false}>
         <div className="image-upload">
           <span className="image-label">Cover image</span>
           {errors.coverImage && <span className="field-error">{errors.coverImage}</span>}
@@ -317,9 +366,9 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
             Add screenshot URL
           </button>
         </div>
-      </FormGroup>
+      </FormSection>
 
-      <FormGroup legend="Links">
+      <FormSection title="Links" defaultOpen={false}>
         <div className="form-grid">
           <Field label="GitHub URL" error={errors.githubUrl}>
             <input
@@ -338,28 +387,10 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
             />
           </Field>
         </div>
-      </FormGroup>
+      </FormSection>
 
-      <FormGroup legend="Display settings">
-        <div className="form-grid">
-          <Field label="Order" error={errors.order}>
-            <input
-              type="number"
-              value={form.order}
-              onChange={(event) => setField('order', event.target.value)}
-              placeholder="1"
-            />
-          </Field>
-        </div>
+      <FormSection title="Publishing / Display Settings">
         <div className="form-checkboxes">
-          <label className="checkbox-field">
-            <input
-              type="checkbox"
-              checked={form.featured}
-              onChange={(event) => setField('featured', event.target.checked)}
-            />
-            Featured
-          </label>
           <label className="checkbox-field">
             <input
               type="checkbox"
@@ -368,17 +399,29 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
             />
             Published
           </label>
+          <label className="checkbox-field">
+            <input
+              type="checkbox"
+              checked={form.featured}
+              onChange={(event) => setField('featured', event.target.checked)}
+            />
+            Featured
+          </label>
         </div>
-      </FormGroup>
-
-      <div className="form-actions">
-        <button type="submit" disabled={saving}>
-          {saving ? 'Saving...' : 'Save'}
-        </button>
-        <button type="button" onClick={onCancel} disabled={saving}>
-          Cancel
-        </button>
-      </div>
+        <Field label="Order" error={errors.order}>
+          <input
+            type="number"
+            value={form.order}
+            onChange={(event) => setField('order', event.target.value)}
+            placeholder="1"
+          />
+        </Field>
+        {isEdit && form.slug && (
+          <Field label="Slug">
+            <div className="slug-display">{form.slug}</div>
+          </Field>
+        )}
+      </FormSection>
     </form>
   )
 }

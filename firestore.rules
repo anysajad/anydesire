@@ -32,7 +32,20 @@ service cloud.firestore {
 
     match /projects/{projectId} {
       allow read: if isPublished() || isAdmin();
-      allow write: if isAdmin();
+
+      allow create: if isAdmin()
+        // Creator metadata must match the authenticated user
+        && request.resource.data.createdByUid == request.auth.uid
+        && request.resource.data.createdByName is string;
+
+      allow update: if isAdmin()
+        // Creator metadata and slug cannot be changed after creation
+        && resource.data.createdByUid == request.resource.data.createdByUid
+        && resource.data.createdByName == request.resource.data.createdByName
+        && resource.data.createdAt == request.resource.data.createdAt
+        && resource.data.slug == request.resource.data.slug;
+
+      allow delete: if isAdmin();
     }
 
     match /settings/contact {

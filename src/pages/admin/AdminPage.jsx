@@ -10,6 +10,12 @@ import {
   updateProject,
 } from '../../lib/projects.js'
 
+function formatDate(date) {
+  if (!date) return '—'
+  const d = date.toDate ? date.toDate() : new Date(date)
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
 function AdminPage() {
   const user = getCurrentUser()
   const { role } = useOutletContext()
@@ -42,7 +48,7 @@ function AdminPage() {
 
   async function handleCreate(projectId, data) {
     try {
-      await createProject(projectId, data)
+      await createProject(projectId, data, user)
       await loadProjects()
       setView('list')
       showNotice('Project created.')
@@ -77,7 +83,6 @@ function AdminPage() {
     if (view.mode === 'add') {
       return (
         <div className="admin-container">
-          <h1>New Project</h1>
           <ProjectForm
             onCancel={() => setView('list')}
             onSubmit={(data) => handleCreate(view.projectId, data)}
@@ -89,7 +94,6 @@ function AdminPage() {
     const project = view.project
     return (
       <div className="admin-container">
-        <h1>Edit Project</h1>
         <ProjectForm
           initialData={project}
           onCancel={() => setView('list')}
@@ -127,9 +131,11 @@ function AdminPage() {
         <Link to="/admin/settings" className="admin-link">
           Contact Information
         </Link>
-        <Link to="/admin/developers" className="admin-link">
-          Developers
-        </Link>
+        {role === 'owner' && (
+          <Link to="/admin/developers" className="admin-link">
+            Developers
+          </Link>
+        )}
         {notice && <span className="notice">{notice}</span>}
       </div>
 
@@ -146,6 +152,7 @@ function AdminPage() {
               <th>Published</th>
               <th>Featured</th>
               <th>Order</th>
+              <th>Created</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -157,6 +164,11 @@ function AdminPage() {
                 <td>{project.published ? 'Yes' : 'No'}</td>
                 <td>{project.featured ? 'Yes' : 'No'}</td>
                 <td>{project.order}</td>
+                <td>
+                  {project.createdByName
+                    ? `${project.createdByName} · ${formatDate(project.createdAt)}`
+                    : formatDate(project.createdAt)}
+                </td>
                 <td className="actions">
                   <button
                     type="button"
@@ -176,7 +188,7 @@ function AdminPage() {
             ))}
             {projects.length === 0 && (
               <tr>
-                <td colSpan="6" className="table-empty">
+                <td colSpan="7" className="table-empty">
                   No projects yet.
                 </td>
               </tr>

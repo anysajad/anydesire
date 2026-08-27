@@ -17,7 +17,8 @@ function LoginPage() {
     try {
       await signInWithEmail(email, password)
       const from = location.state?.from?.pathname
-      navigate(from || '/admin', { replace: true })
+      const safeFrom = from?.startsWith('/') && !from.startsWith('//') ? from : null
+      navigate(safeFrom || '/admin', { replace: true })
     } catch {
       setError('Invalid email or password.')
     } finally {
