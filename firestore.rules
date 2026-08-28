@@ -44,25 +44,7 @@ service cloud.firestore {
         && resource.data.createdByUid == request.resource.data.createdByUid
         && resource.data.createdByName == request.resource.data.createdByName
         && resource.data.createdAt == request.resource.data.createdAt
-        && resource.data.slug == request.resource.data.slug
-        // Publisher metadata: enforce identity on publish transition, preserve otherwise
-        && (
-          // Transition to published: enforce publisher identity
-          (resource.data.published == false && request.resource.data.published == true
-           && request.resource.data.publishedByUid == request.auth.uid
-           && request.resource.data.publishedAt != null
-           // Verify publishedByName matches admins/{uid}.name (or null if no admin doc)
-           && ((exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-                && (get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.name || null)
-                   == request.resource.data.publishedByName)
-               || (!exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-                   && request.resource.data.publishedByName == null)))
-          ||
-          // All other cases: preserve existing publisher metadata (immutable)
-          (resource.data.publishedByUid == request.resource.data.publishedByUid
-           && resource.data.publishedByName == request.resource.data.publishedByName
-           && resource.data.publishedAt == request.resource.data.publishedAt)
-        );
+        && resource.data.slug == request.resource.data.slug;
 
       allow delete: if isAdmin();
     }

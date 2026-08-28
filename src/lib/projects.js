@@ -2,7 +2,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDoc,
   getDocs,
   limit,
   orderBy,
@@ -56,6 +55,20 @@ export async function isSlugUnique(slug) {
   return snapshot.empty
 }
 
+// Determines the next order value by reading all projects and finding the
+// highest valid numeric order. Handles missing, null, and non-numeric orders
+// safely by ignoring them.
+// NOTE: This is not atomic — two simultaneous creates could theoretically
+// get the same order. Acceptable for this small portfolio.
+export async function getNextOrder() {
+  const snapshot = await getDocs(collection(db, PROJECTS_COLLECTION))
+  const validOrders = snapshot.docs
+    .map((doc) => doc.data().order)
+    .filter((o) => Number.isFinite(o))
+  if (validOrders.length === 0) return 1
+  return Math.max(...validOrders) + 1
+}
+
 export async function listProjects() {
   const q = query(collection(db, PROJECTS_COLLECTION), orderBy('order', 'asc'))
   const snapshot = await getDocs(q)
@@ -67,9 +80,14 @@ export function newProjectId() {
 }
 
 export async function createProject(id, data, user) {
-  const name = await getAdminName(user.uid)
+  const [name, nextOrder] = await Promise.all([
+    getAdminName(user.uid),
+    getNextOrder(),
+  ])
+  const { order: _order, ...rest } = data
   return setDoc(doc(db, PROJECTS_COLLECTION, id), {
-    ...data,
+    ...rest,
+    order: nextOrder,
     createdByUid: user.uid,
     createdByName: name,
     createdAt: serverTimestamp(),
@@ -77,7 +95,7 @@ export async function createProject(id, data, user) {
   })
 }
 
-export async function updateProject(id, data, user) {
+export function updateProject(id, data) {
   const {
     createdByUid: _cUid,
     createdByName: _cName,
@@ -85,28 +103,8 @@ export async function updateProject(id, data, user) {
     slug: _slug,
     ...rest
   } = data
-
-  // Detect unpublished → published transition
-  let publisherFields = {}
-  if (user) {
-    const existingSnap = await getDoc(doc(db, PROJECTS_COLLECTION, id))
-    const existing = existingSnap.exists() ? existingSnap.data() : {}
-    const wasPublished = existing.published === true
-    const isNowPublished = rest.published === true
-
-    if (!wasPublished && isNowPublished) {
-      const pubName = await getAdminName(user.uid)
-      publisherFields = {
-        publishedByUid: user.uid,
-        publishedByName: pubName,
-        publishedAt: serverTimestamp(),
-      }
-    }
-  }
-
   return updateDoc(doc(db, PROJECTS_COLLECTION, id), {
     ...rest,
-    ...publisherFields,
     updatedAt: serverTimestamp(),
   })
 }

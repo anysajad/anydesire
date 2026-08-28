@@ -183,7 +183,7 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
       demoUrl: form.demoUrl.trim(),
       featured: form.featured,
       published: form.published,
-      order: form.order === '' ? NaN : Number(form.order),
+      order: isEdit ? (form.order === '' ? NaN : Number(form.order)) : 0,
     }
     const nextErrors = validate(data)
     setErrors(nextErrors)
@@ -199,7 +199,6 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
 
   const createdDate = formatDate(initialData?.createdAt)
   const updatedDate = formatDate(initialData?.updatedAt)
-  const publishedDate = formatDate(initialData?.publishedAt)
 
   return (
     <form className="project-form" onSubmit={handleSubmit}>
@@ -223,7 +222,6 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
       {isEdit && (
         <div className="project-meta">
           <span>Created by {initialData.createdByName ?? 'Null'}{createdDate ? ` · ${createdDate}` : ''}</span>
-          <span>Published by {initialData.publishedByName ?? 'Null'}{publishedDate ? ` · ${publishedDate}` : ''}</span>
           {updatedDate && (
             <span>Last updated · {updatedDate}</span>
           )}
@@ -405,14 +403,16 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
             Featured
           </label>
         </div>
-        <Field label="Order" error={errors.order}>
-          <input
-            type="number"
-            value={form.order}
-            onChange={(event) => setField('order', event.target.value)}
-            placeholder="1"
-          />
-        </Field>
+        {isEdit && (
+          <Field label="Order" error={errors.order}>
+            <input
+              type="number"
+              value={form.order}
+              onChange={(event) => setField('order', event.target.value)}
+              placeholder="1"
+            />
+          </Field>
+        )}
         {isEdit && form.slug && (
           <Field label="Slug">
             <div className="slug-display">{form.slug}</div>

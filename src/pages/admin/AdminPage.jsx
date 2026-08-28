@@ -59,7 +59,7 @@ function AdminPage() {
 
   async function handleUpdate(project, data) {
     try {
-      await updateProject(project.id, data, user)
+      await updateProject(project.id, data)
       await loadProjects()
       setView('list')
       showNotice('Project updated.')
@@ -151,7 +151,6 @@ function AdminPage() {
               <th>Status</th>
               <th>Published</th>
               <th>Added By</th>
-              <th>Publisher</th>
               <th>Featured</th>
               <th>Order</th>
               <th>Actions</th>
@@ -167,11 +166,6 @@ function AdminPage() {
                   {project.createdByName
                     ? `${project.createdByName} · ${formatDate(project.createdAt)}`
                     : `Null${formatDate(project.createdAt) ? ` · ${formatDate(project.createdAt)}` : ''}`}
-                </td>
-                <td>
-                  {project.publishedByName
-                    ? `${project.publishedByName} · ${formatDate(project.publishedAt)}`
-                    : `Null${formatDate(project.publishedAt) ? ` · ${formatDate(project.publishedAt)}` : ''}`}
                 </td>
                 <td>{project.featured ? 'Yes' : 'No'}</td>
                 <td>{project.order}</td>
@@ -194,7 +188,7 @@ function AdminPage() {
             ))}
             {projects.length === 0 && (
               <tr>
-                <td colSpan="8" className="table-empty">
+                <td colSpan="7" className="table-empty">
                   No projects yet.
                 </td>
               </tr>
