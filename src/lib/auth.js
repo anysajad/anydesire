@@ -2,13 +2,18 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
 } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from './firebase.js'
 
 export const OWNER_UID = import.meta.env.VITE_ADMIN_UID
 
-export function signInWithEmail(email, password) {
+export async function signInWithEmail(email, password, persistent = true) {
+  const persistence = persistent ? browserLocalPersistence : browserSessionPersistence
+  await setPersistence(auth, persistence)
   return signInWithEmailAndPassword(auth, email, password)
 }
 

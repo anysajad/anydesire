@@ -83,6 +83,14 @@ export const translations = {
       text: 'The page you are looking for does not exist.',
       home: 'Back to home',
     },
+    login: {
+      rememberMe: 'Remember me',
+      email: 'Email',
+      password: 'Password',
+      signingIn: 'Signing in...',
+      login: 'Login',
+      invalidCredentials: 'Invalid email or password.',
+    },
   },
   ar: {
     meta: {
@@ -167,6 +175,14 @@ export const translations = {
       title: 'الصفحة غير موجودة',
       text: 'الصفحة التي تبحث عنها غير موجودة.',
       home: 'العودة للرئيسية',
+    },
+    login: {
+      rememberMe: 'تذكرني',
+      email: 'البريد الإلكتروني',
+      password: 'كلمة المرور',
+      signingIn: 'جارٍ تسجيل الدخول...',
+      login: 'تسجيل الدخول',
+      invalidCredentials: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
     },
   },
 }

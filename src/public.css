@@ -799,6 +799,37 @@ html[lang='ar'] .project-back::before {
   }
 }
 
+@media (max-width: 480px) {
+  html, body {
+    overflow-x: hidden;
+  }
+
+  .panel {
+    padding: 1.5rem;
+    margin: 1.5rem auto;
+  }
+
+  .panel h1 {
+    font-size: 1.3rem;
+  }
+
+  .nav-links {
+    gap: 0.75rem;
+  }
+
+  .hero-title {
+    max-width: 100%;
+  }
+
+  .hero-subtitle {
+    max-width: 100%;
+  }
+
+  .project-header h1 {
+    max-width: 100%;
+  }
+}
+
 /* ---------- Arabic typography ---------- */
 
 /* Arabic is a connected script: negative letter-spacing on headings visually
