@@ -71,9 +71,9 @@ function Required() {
   return <span className="required-mark" aria-label="required">*</span>
 }
 
-function Field({ label, required, error, children }) {
+function Field({ label, required, error, dir, children }) {
   return (
-    <label className="field">
+    <label className={`field${dir === 'rtl' ? ' rtl' : ''}`}>
       <span>
         {label}
         {required && <Required />}
@@ -238,7 +238,7 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
               placeholder="Debt Ledger"
             />
           </Field>
-          <Field label="Arabic title" required error={errors.titleAr}>
+          <Field label="Arabic title" required dir="rtl" error={errors.titleAr}>
             <input
               type="text"
               value={form.titleAr}
@@ -248,7 +248,7 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
           </Field>
         </div>
         <div className="form-grid">
-          <Field label="Category" required error={errors.category}>
+          <Field label="Category" required dir="rtl" error={errors.category}>
             <input
               type="text"
               value={form.category}
@@ -288,7 +288,7 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
             placeholder="Describe what the project does, why it was built, and what problem it solves..."
           />
         </Field>
-        <Field label="Arabic short description" required error={errors.shortDescriptionAr}>
+        <Field label="Arabic short description" required dir="rtl" error={errors.shortDescriptionAr}>
           <textarea
             rows="2"
             value={form.shortDescriptionAr}
@@ -296,7 +296,7 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
             placeholder="برنامج بسيط لإدارة ديون الزبائن لأصحاب المحلات."
           />
         </Field>
-        <Field label="Arabic full description">
+        <Field label="Arabic full description" dir="rtl">
           <textarea
             rows="4"
             value={form.descriptionAr}
@@ -318,7 +318,7 @@ function ProjectForm({ initialData, onSubmit, onCancel }) {
       </FormSection>
 
       <FormSection title="Features" defaultOpen={false}>
-        <Field label="Features (comma-separated)">
+        <Field label="Features (comma-separated)" dir="rtl">
           <input
             type="text"
             value={form.features}

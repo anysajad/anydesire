@@ -503,6 +503,19 @@ button.btn-danger:hover:not(:disabled) {
   font: inherit;
 }
 
+[dir="rtl"] .field input,
+[dir="rtl"] .field textarea,
+[dir="rtl"] .field select {
+  direction: ltr;
+  text-align: left;
+}
+
+[dir="rtl"] .field.rtl input,
+[dir="rtl"] .field.rtl textarea {
+  direction: rtl;
+  text-align: right;
+}
+
 .field-error {
   color: var(--danger);
   font-weight: 400;

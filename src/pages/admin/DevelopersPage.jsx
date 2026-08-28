@@ -144,7 +144,7 @@ function DevelopersPage() {
                 placeholder="developer@example.com"
               />
             </label>
-            <label className="field">
+            <label className="field rtl">
               <span>Name</span>
               <input
                 type="text"
